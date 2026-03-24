@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>qualixx — AI-Powered QMS Platform</title>
+  <meta name="description" content="전문 지식 없이도 ISO 표준을 충족하는 품질경영시스템을 빠르게 구축하고 운영하세요." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --white: #ffffff;
+      --black: #1d1d1f;
+      --gray1: #f5f5f7;
+      --gray2: #e8e8ed;
+      --gray3: #d2d2d7;
+      --blue: #0071e3;
+      --blue-hover: #0077ed;
+      --text-primary: #1d1d1f;
+      --text-secondary: #6e6e73;
+      --text-tertiary: #86868b;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+      background: var(--white);
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* NAV */
+    nav {
+      position: sticky; top: 0; z-index: 200;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+      height: 52px; display: flex; align-items: center;
+      padding: 0 24px; justify-content: space-between;
+    }
+    .nav-logo { font-size: 21px; font-weight: 700; letter-spacing: -0.8px; color: var(--black); text-decoration: none; }
+    .nav-logo .q-accent { color: var(--blue); }
+    .nav-links { display: flex; list-style: none; align-items: center; }
+    .nav-links a { color: var(--text-secondary); text-decoration: none; font-size: 12px; padding: 0 12px; transition: color 0.15s; }
+    .nav-links a:hover { color: var(--text-primary); }
+    .nav-cta-link { color: var(--blue) !important; }
+
+    /* HERO */
+    .hero { background: var(--gray1); text-align: center; padding: 96px 24px 80px; }
+    .hero-eyebrow { font-size: 17px; font-weight: 600; color: var(--blue); margin-bottom: 8px; animation: fadeUp 0.6s ease both; }
+    .hero h1 { font-size: clamp(48px, 8vw, 96px); font-weight: 700; letter-spacing: -3px; line-height: 1.04; color: var(--black); margin-bottom: 20px; animation: fadeUp 0.6s 0.1s ease both; }
+    .hero-sub { font-size: clamp(18px, 2.5vw, 24px); font-weight: 300; color: var(--text-secondary); line-height: 1.5; max-width: 600px; margin: 0 auto 36px; letter-spacing: -0.3px; animation: fadeUp 0.6s 0.2s ease both; }
+    .hero-cta-row { display: flex; gap: 20px; justify-content: center; align-items: center; animation: fadeUp 0.6s 0.3s ease both; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    .cta-pill { display: inline-flex; align-items: center; background: var(--blue); color: #fff; font-size: 17px; font-weight: 400; padding: 12px 24px; border-radius: 980px; text-decoration: none; transition: background 0.15s; }
+    .cta-pill:hover { background: var(--blue-hover); }
+    .cta-link { font-size: 17px; font-weight: 400; color: var(--blue); text-decoration: none; display: inline-flex; align-items: center; transition: color 0.15s; }
+    .cta-link:hover { color: var(--blue-hover); }
+    .cta-link::after { content: ' ›'; }
+
+    /* STATS */
+    .stats-row { display: flex; justify-content: center; padding: 56px 24px; background: var(--white); border-bottom: 1px solid var(--gray2); }
+    .stat-item { text-align: center; padding: 0 48px; border-right: 1px solid var(--gray2); }
+    .stat-item:last-child { border-right: none; }
+    .stat-num { font-size: 48px; font-weight: 700; letter-spacing: -2px; color: var(--black); line-height: 1; }
+    .stat-num sup { font-size: 24px; font-weight: 500; vertical-align: top; margin-top: 6px; display: inline-block; }
+    .stat-label { font-size: 14px; color: var(--text-tertiary); margin-top: 8px; }
+
+    /* SECTION */
+    .section { padding: 80px 24px; max-width: 1080px; margin: 0 auto; }
+    .section-center { text-align: center; }
+    .section-eyebrow { font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 8px; }
+    .section-title { font-size: clamp(28px, 4vw, 48px); font-weight: 700; letter-spacing: -1.5px; color: var(--black); line-height: 1.1; margin-bottom: 16px; }
+    .section-desc { font-size: 17px; font-weight: 300; color: var(--text-secondary); line-height: 1.65; max-width: 580px; margin: 0 auto 56px; letter-spacing: -0.2px; }
+
+    /* SERVICES */
+    .tile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .tile { background: var(--gray1); border-radius: 20px; padding: 40px 36px; text-align: left; transition: background 0.2s; min-height: 240px; display: flex; flex-direction: column; justify-content: flex-end; }
+    .tile:hover { background: #ebebf0; }
+    .tile-icon { font-size: 36px; margin-bottom: auto; padding-bottom: 24px; display: block; }
+    .tile-eyebrow { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--blue); margin-bottom: 6px; }
+    .tile-title { font-size: 22px; font-weight: 700; letter-spacing: -0.6px; color: var(--black); line-height: 1.2; margin-bottom: 10px; }
+    .tile-desc { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+    .tile-cta { display: inline-flex; align-items: center; margin-top: 16px; font-size: 14px; color: var(--blue); text-decoration: none; font-weight: 500; }
+    .tile-cta::after { content: ' ›'; }
+    .tile-cta:hover { color: var(--blue-hover); }
+
+    /* ISO */
+    .iso-section { background: linear-gradient(160deg, #e8f0fe 0%, #dbeafe 50%, #ede9fe 100%); padding: 80px 24px; }
+    .iso-inner { max-width: 1080px; margin: 0 auto; }
+    .iso-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .iso-tile { background: rgba(255,255,255,0.75); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.9); border-radius: 16px; padding: 32px 28px; transition: background 0.2s, transform 0.2s; }
+    .iso-tile:hover { background: rgba(255,255,255,0.92); transform: translateY(-2px); }
+    .iso-num { font-size: 26px; font-weight: 700; color: var(--black); letter-spacing: -1px; margin-bottom: 4px; }
+    .iso-name { font-size: 13px; font-weight: 500; color: var(--text-secondary); margin-bottom: 16px; }
+    .iso-badge { display: inline-block; background: rgba(0,113,227,0.1); color: var(--blue); font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 980px; margin-bottom: 14px; }
+    .iso-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+
+    /* WHY */
+    .why-section { background: var(--white); padding: 80px 24px; border-top: 1px solid var(--gray2); }
+    .why-inner { max-width: 1080px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
+    .why-features { display: flex; flex-direction: column; gap: 32px; margin-top: 40px; }
+    .why-item { display: flex; gap: 18px; }
+    .why-icon-wrap { width: 40px; height: 40px; border-radius: 12px; background: var(--gray1); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .why-item-title { font-size: 16px; font-weight: 600; color: var(--black); letter-spacing: -0.3px; margin-bottom: 4px; }
+    .why-item-desc { font-size: 14px; color: var(--text-secondary); line-height: 1.65; }
+
+    /* DASHBOARD */
+    .dashboard-panel { background: var(--gray1); border-radius: 20px; padding: 28px; }
+    .dp-header { display: flex; align-items: center; gap: 6px; margin-bottom: 22px; }
+    .dp-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dp-dot-r { background: #ff5f57; } .dp-dot-y { background: #febc2e; } .dp-dot-g { background: #28c840; }
+    .dp-label { font-size: 12px; color: var(--text-tertiary); margin-left: 6px; }
+    .dp-prog-rows { display: flex; flex-direction: column; gap: 14px; }
+    .dp-prog-label { display: flex; justify-content: space-between; margin-bottom: 6px; }
+    .dp-prog-name { font-size: 13px; color: var(--text-primary); }
+    .dp-prog-pct { font-size: 13px; color: var(--blue); font-weight: 500; }
+    .dp-prog-track { height: 4px; background: var(--gray3); border-radius: 100px; overflow: hidden; }
+    .dp-prog-fill { height: 100%; background: var(--blue); border-radius: 100px; }
+    .dp-footer { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--gray2); display: flex; justify-content: space-between; align-items: flex-end; }
+    .dp-total-label { font-size: 12px; color: var(--text-tertiary); }
+    .dp-total-num { font-size: 32px; font-weight: 700; color: var(--black); letter-spacing: -1.5px; line-height: 1; margin-top: 4px; }
+    .dp-total-num span { font-size: 18px; font-weight: 500; }
+    .dp-cert-label { font-size: 12px; color: var(--text-tertiary); text-align: right; }
+    .dp-cert-val { font-size: 15px; font-weight: 600; color: var(--blue); text-align: right; margin-top: 4px; }
+
+    /* CONTACT */
+    .contact-section { background: var(--gray1); padding: 80px 24px; text-align: center; border-top: 1px solid var(--gray2); }
+    .contact-inner { max-width: 560px; margin: 0 auto; }
+    .contact-card { background: var(--white); border-radius: 20px; padding: 40px; text-align: left; box-shadow: 0 4px 24px rgba(0,0,0,0.06); }
+    .contact-input { width: 100%; background: var(--gray1); border: 1px solid var(--gray2); border-radius: 10px; padding: 13px 16px; color: var(--text-primary); font-size: 15px; font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.2s, background 0.2s; margin-bottom: 12px; display: block; -webkit-appearance: none; }
+    .contact-input::placeholder { color: var(--text-tertiary); }
+    .contact-input:focus { border-color: var(--blue); background: var(--white); }
+    textarea.contact-input { resize: vertical; min-height: 100px; line-height: 1.6; }
+    .contact-submit { width: 100%; background: var(--blue); color: #fff; padding: 14px; border-radius: 980px; font-size: 17px; font-weight: 400; border: none; cursor: pointer; font-family: 'Inter', sans-serif; margin-top: 4px; transition: background 0.15s; }
+    .contact-submit:hover { background: var(--blue-hover); }
+
+    /* FOOTER */
+    footer { background: var(--gray1); border-top: 1px solid var(--gray2); padding: 20px 24px; }
+    .footer-top { max-width: 1080px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding-bottom: 16px; border-bottom: 1px solid var(--gray2); }
+    .footer-logo { font-size: 18px; font-weight: 700; letter-spacing: -0.6px; color: var(--black); }
+    .footer-logo .q-accent { color: var(--blue); }
+    .footer-links { display: flex; gap: 20px; list-style: none; }
+    .footer-links a { font-size: 12px; color: var(--text-tertiary); text-decoration: none; }
+    .footer-links a:hover { color: var(--text-secondary); }
+    .footer-bottom { max-width: 1080px; margin: 12px auto 0; font-size: 12px; color: var(--text-tertiary); }
+
+    @media (max-width: 768px) {
+      .tile-grid { grid-template-columns: 1fr; }
+      .iso-grid { grid-template-columns: 1fr 1fr; }
+      .why-inner { grid-template-columns: 1fr; gap: 40px; }
+      .nav-links { display: none; }
+      .stats-row { flex-wrap: wrap; gap: 32px; }
+      .stat-item { border-right: none; padding: 0 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">quali<span class="q-accent">xx</span></a>
+  <ul class="nav-links">
+    <li><a href="#services">서비스</a></li>
+    <li><a href="#standards">지원 표준</a></li>
+    <li><a href="#why">왜 qualixx?</a></li>
+    <li><a href="#contact" class="nav-cta-link">문의하기</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">AI-Powered QMS Platform</div>
+  <h1>qualixx</h1>
+  <p class="hero-sub">품질경영시스템, 지금보다 쉽고 빠르게.<br>전문 지식 없이도 ISO 표준을 충족하는 지능형 시스템.</p>
+  <div class="hero-cta-row">
+    <a href="#contact" class="cta-pill">문의하기</a>
+    <a href="#services" class="cta-link">서비스 살펴보기</a>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-row">
+  <div class="stat-item"><div class="stat-num">4<sup>+</sup></div><div class="stat-label">지원 ISO 표준</div></div>
+  <div class="stat-item"><div class="stat-num">80<sup>%</sup></div><div class="stat-label">구축 시간 절감</div></div>
+  <div class="stat-item"><div class="stat-num">AI</div><div class="stat-label">지능형 자동화</div></div>
+  <div class="stat-item"><div class="stat-num">24<sup>/7</sup></div><div class="stat-label">실시간 모니터링</div></div>
+</div>
+
+<!-- SERVICES -->
+<div class="section section-center" id="services">
+  <div class="section-eyebrow">Core Services</div>
+  <h2 class="section-title">모든 규모의 기업을 위한<br>QMS 솔루션</h2>
+  <p class="section-desc">중소기업부터 대기업까지, 업종에 관계없이 최적화된 품질경영시스템을 손쉽게 도입하세요.</p>
+  <div class="tile-grid">
+    <div class="tile"><span class="tile-icon">⚙️</span><div class="tile-eyebrow">Automation</div><div class="tile-title">자동화 QMS 구축</div><div class="tile-desc">ISO 요구사항에 맞는 프로세스를 자동으로 설계하고 유기적으로 연결된 시스템을 즉시 구축합니다.</div><a class="tile-cta" href="#">자세히 보기</a></div>
+    <div class="tile"><span class="tile-icon">🔬</span><div class="tile-eyebrow">Intelligence</div><div class="tile-title">AI 측정 & 모니터링</div><div class="tile-desc">제품 및 프로세스를 실시간으로 측정하고 평가합니다. AI가 이상 징후를 조기에 감지합니다.</div><a class="tile-cta" href="#">자세히 보기</a></div>
+    <div class="tile"><span class="tile-icon">📋</span><div class="tile-eyebrow">Certification</div><div class="tile-title">인증 준비 지원</div><div class="tile-desc">인증 심사에 필요한 문서와 증거를 자동으로 생성하고 관리합니다. 심사 합격률을 높입니다.</div><a class="tile-cta" href="#">자세히 보기</a></div>
+    <div class="tile"><span class="tile-icon">🧠</span><div class="tile-eyebrow">Improvement</div><div class="tile-title">지능형 개선 엔진</div><div class="tile-desc">데이터 기반으로 품질 이슈를 분석하고 개선 방향을 자동으로 제안하는 인텔리전트 시스템입니다.</div><a class="tile-cta" href="#">자세히 보기</a></div>
+  </div>
+</div>
+
+<!-- ISO STANDARDS -->
+<div class="iso-section" id="standards">
+  <div class="iso-inner">
+    <div style="text-align:center; margin-bottom:48px;">
+      <div class="section-eyebrow" style="color:#5b8dee;">Supported Standards</div>
+      <h2 class="section-title">주요 ISO 표준 전부 지원</h2>
+      <p class="section-desc">qualixx는 다양한 국제 표준을 하나의 통합 플랫폼에서 관리합니다.</p>
+    </div>
+    <div class="iso-grid">
+      <div class="iso-tile"><div class="iso-badge">범용</div><div class="iso-num">ISO 9001</div><div class="iso-name">품질경영시스템</div><div class="iso-desc">모든 업종에 적용 가능한 범용 품질경영 국제 표준. 고객 만족과 지속적 개선을 위한 기반.</div></div>
+      <div class="iso-tile"><div class="iso-badge">의료기기</div><div class="iso-num">ISO 13485</div><div class="iso-name">의료기기 QMS</div><div class="iso-desc">의료기기 산업 특화 품질경영 표준. 규제 요구사항 충족 및 제품 안전성 보장.</div></div>
+      <div class="iso-tile"><div class="iso-badge">정보보안</div><div class="iso-num">ISO 27001</div><div class="iso-name">정보보안 관리</div><div class="iso-desc">정보자산 보호를 위한 국제 표준. 데이터 보안 리스크를 체계적으로 관리.</div></div>
+      <div class="iso-tile"><div class="iso-badge">AI 관리</div><div class="iso-num">ISO 42001</div><div class="iso-name">AI 관리 시스템</div><div class="iso-desc">AI 시스템의 책임 있는 개발·운영을 위한 최신 국제 표준. AI 거버넌스 체계 구축.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- WHY QUALIXX -->
+<div class="why-section" id="why">
+  <div class="why-inner">
+    <div>
+      <div class="section-eyebrow">Why qualixx</div>
+      <h2 class="section-title">왜 qualixx를<br>선택하나요?</h2>
+      <p style="font-size:17px;font-weight:300;color:var(--text-secondary);line-height:1.65;margin-top:16px;">복잡한 ISO 표준을 쉽고 빠르게.<br>전문가 없이도 세계 수준의 품질경영이 가능합니다.</p>
+      <div class="why-features">
+        <div class="why-item"><div class="why-icon-wrap">⚡</div><div><div class="why-item-title">빠른 도입</div><div class="why-item-desc">기존 수개월 걸리던 QMS 구축을 몇 주 만에 완료. 사전 설정된 템플릿으로 즉시 시작.</div></div></div>
+        <div class="why-item"><div class="why-icon-wrap">🔗</div><div><div class="why-item-title">유기적 프로세스 연결</div><div class="why-item-desc">개별 프로세스가 서로 연결되어 자동으로 데이터를 공유하고 업무 흐름을 최적화합니다.</div></div></div>
+        <div class="why-item"><div class="why-icon-wrap">🤖</div><div><div class="why-item-title">AI 기반 자동화</div><div class="why-item-desc">문서 생성, 리스크 평가, 부적합 관리까지 AI가 대신 처리해 업무 부담을 대폭 줄입니다.</div></div></div>
+        <div class="why-item"><div class="why-icon-wrap">📊</div><div><div class="why-item-title">실시간 대시보드</div><div class="why-item-desc">품질 지표를 한눈에 파악하고 인증 준비 현황을 실시간으로 모니터링합니다.</div></div></div>
+      </div>
+    </div>
+    <div>
+      <div class="dashboard-panel">
+        <div class="dp-header">
+          <div class="dp-dot dp-dot-r"></div><div class="dp-dot dp-dot-y"></div><div class="dp-dot dp-dot-g"></div>
+          <span class="dp-label">인증 준비 현황</span>
+        </div>
+        <div class="dp-prog-rows">
+          <div><div class="dp-prog-label"><span class="dp-prog-name">ISO 9001 문서화</span><span class="dp-prog-pct">92%</span></div><div class="dp-prog-track"><div class="dp-prog-fill" style="width:92%;"></div></div></div>
+          <div><div class="dp-prog-label"><span class="dp-prog-name">내부 심사 완료</span><span class="dp-prog-pct">78%</span></div><div class="dp-prog-track"><div class="dp-prog-fill" style="width:78%;"></div></div></div>
+          <div><div class="dp-prog-label"><span class="dp-prog-name">부적합 처리</span><span class="dp-prog-pct">95%</span></div><div class="dp-prog-track"><div class="dp-prog-fill" style="width:95%;"></div></div></div>
+          <div><div class="dp-prog-label"><span class="dp-prog-name">직원 교육 이수</span><span class="dp-prog-pct">61%</span></div><div class="dp-prog-track"><div class="dp-prog-fill" style="width:61%;"></div></div></div>
+          <div><div class="dp-prog-label"><span class="dp-prog-name">리스크 평가</span><span class="dp-prog-pct">87%</span></div><div class="dp-prog-track"><div class="dp-prog-fill" style="width:87%;"></div></div></div>
+        </div>
+        <div class="dp-footer">
+          <div><div class="dp-total-label">전체 준비도</div><div class="dp-total-num">82.6<span>%</span></div></div>
+          <div><div class="dp-cert-label">예상 인증 시기</div><div class="dp-cert-val">2026 Q3</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT -->
+<div class="contact-section" id="contact">
+  <div class="contact-inner">
+    <div class="section-eyebrow">Contact Us</div>
+    <h2 class="section-title">문의하기</h2>
+    <p class="section-desc">qualixx 전문팀이 귀사에 맞는 최적의 QMS 도입 방안을 안내해 드립니다.</p>
+    <div class="contact-card">
+      <input type="text" class="contact-input" id="f-company" placeholder="회사명" />
+      <input type="text" class="contact-input" id="f-name" placeholder="담당자 이름" />
+      <input type="email" class="contact-input" id="f-email" placeholder="업무용 이메일" />
+      <input type="tel" class="contact-input" id="f-tel" placeholder="연락처" />
+      <textarea class="contact-input" id="f-msg" placeholder="문의 내용을 입력해 주세요."></textarea>
+      <button class="contact-submit" id="sendBtn">문의 보내기</button>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-logo">quali<span class="q-accent">xx</span></div>
+    <ul class="footer-links">
+      <li><a href="#">개인정보처리방침</a></li>
+      <li><a href="#">이용약관</a></li>
+      <li><a href="#contact">문의하기</a></li>
+    </ul>
+  </div>
+  <div class="footer-bottom">Copyright © 2026 qualixx. All rights reserved.</div>
+</footer>
+
+<script>
+  document.getElementById('sendBtn').addEventListener('click', function () {
+    var company = document.getElementById('f-company').value.trim();
+    var name    = document.getElementById('f-name').value.trim();
+    var email   = document.getElementById('f-email').value.trim();
+    var tel     = document.getElementById('f-tel').value.trim();
+    var msg     = document.getElementById('f-msg').value.trim();
+    if (!company || !name || !email || !msg) {
+      alert('회사명, 담당자 이름, 이메일, 문의 내용은 필수 항목입니다.');
+      return;
+    }
+    var subject = encodeURIComponent('[qualixx 문의] ' + company + ' - ' + name);
+    var body = encodeURIComponent(
+      '회사명: ' + company + '\n' +
+      '담당자: ' + name + '\n' +
+      '이메일: ' + email + '\n' +
+      '연락처: ' + (tel || '미입력') + '\n\n' +
+      '문의 내용:\n' + msg
+    );
+    window.location.href = 'mailto:support@qualixx.ai?subject=' + subject + '&body=' + body;
+  });
+</script>
+
+</body>
+</html>
