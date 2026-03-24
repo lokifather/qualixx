@@ -9,150 +9,170 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
+    * { margin:0; padding:0; box-sizing:border-box; }
     :root {
-      --white: #ffffff;
-      --black: #1d1d1f;
-      --gray1: #f5f5f7;
-      --gray2: #e8e8ed;
-      --gray3: #d2d2d7;
-      --blue: #0071e3;
-      --blue-hover: #0077ed;
-      --text-primary: #1d1d1f;
-      --text-secondary: #6e6e73;
-      --text-tertiary: #86868b;
+      --white:#ffffff; --black:#1d1d1f; --gray1:#f5f5f7; --gray2:#e8e8ed; --gray3:#d2d2d7;
+      --blue:#0071e3; --blue-hover:#0077ed;
+      --text-primary:#1d1d1f; --text-secondary:#6e6e73; --text-tertiary:#86868b;
     }
+    body { font-family:'Inter',-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif; background:var(--white); color:var(--text-primary); -webkit-font-smoothing:antialiased; overflow-x:hidden; }
 
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
-      background: var(--white);
-      color: var(--text-primary);
-      -webkit-font-smoothing: antialiased;
-      overflow-x: hidden;
-    }
+    /* NAV */
+    nav { position:sticky; top:0; z-index:200; background:rgba(255,255,255,0.85); backdrop-filter:saturate(180%) blur(20px); -webkit-backdrop-filter:saturate(180%) blur(20px); border-bottom:1px solid rgba(0,0,0,0.08); height:52px; display:flex; align-items:center; padding:0 24px; justify-content:space-between; }
+    .nav-logo { font-size:21px; font-weight:700; letter-spacing:-0.8px; color:var(--black); text-decoration:none; }
+    .nav-logo .q-accent { color:var(--blue); }
+    .nav-links { display:flex; list-style:none; align-items:center; }
+    .nav-links a { color:var(--text-secondary); text-decoration:none; font-size:12px; padding:0 12px; transition:color 0.15s; }
+    .nav-links a:hover { color:var(--text-primary); }
+    .nav-cta-link { color:var(--blue) !important; }
 
-    nav {
-      position: sticky; top: 0; z-index: 200;
-      background: rgba(255,255,255,0.85);
-      backdrop-filter: saturate(180%) blur(20px);
-      -webkit-backdrop-filter: saturate(180%) blur(20px);
-      border-bottom: 1px solid rgba(0,0,0,0.08);
-      height: 52px; display: flex; align-items: center;
-      padding: 0 24px; justify-content: space-between;
-    }
-    .nav-logo { font-size: 21px; font-weight: 700; letter-spacing: -0.8px; color: var(--black); text-decoration: none; }
-    .nav-logo .q-accent { color: var(--blue); }
-    .nav-links { display: flex; list-style: none; align-items: center; }
-    .nav-links a { color: var(--text-secondary); text-decoration: none; font-size: 12px; padding: 0 12px; transition: color 0.15s; }
-    .nav-links a:hover { color: var(--text-primary); }
-    .nav-cta-link { color: var(--blue) !important; }
+    /* HERO */
+    .hero { background:var(--gray1); text-align:center; padding:96px 24px 80px; }
+    .hero-eyebrow { font-size:17px; font-weight:600; color:var(--blue); margin-bottom:8px; animation:fadeUp 0.6s ease both; }
+    .hero h1 { font-size:clamp(48px,8vw,96px); font-weight:700; letter-spacing:-3px; line-height:1.04; color:var(--black); margin-bottom:20px; animation:fadeUp 0.6s 0.1s ease both; }
+    .hero h1 .q-accent { color:var(--blue); }
+    .hero-sub { font-size:clamp(18px,2.5vw,24px); font-weight:300; color:var(--text-secondary); line-height:1.5; max-width:600px; margin:0 auto 36px; letter-spacing:-0.3px; animation:fadeUp 0.6s 0.2s ease both; }
+    .hero-cta-row { display:flex; gap:20px; justify-content:center; align-items:center; animation:fadeUp 0.6s 0.3s ease both; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+    .cta-pill { display:inline-flex; align-items:center; background:var(--blue); color:#fff; font-size:17px; font-weight:400; padding:12px 24px; border-radius:980px; text-decoration:none; transition:background 0.15s; }
+    .cta-pill:hover { background:var(--blue-hover); }
+    .cta-link { font-size:17px; font-weight:400; color:var(--blue); text-decoration:none; display:inline-flex; align-items:center; transition:color 0.15s; }
+    .cta-link:hover { color:var(--blue-hover); }
+    .cta-link::after { content:' ›'; }
 
-    .hero { background: var(--gray1); text-align: center; padding: 96px 24px 80px; }
-    .hero-eyebrow { font-size: 17px; font-weight: 600; color: var(--blue); margin-bottom: 8px; animation: fadeUp 0.6s ease both; }
-    .hero h1 { font-size: clamp(48px, 8vw, 96px); font-weight: 700; letter-spacing: -3px; line-height: 1.04; color: var(--black); margin-bottom: 20px; animation: fadeUp 0.6s 0.1s ease both; }
-    .hero h1 .q-accent { color: var(--blue); }
-    .hero-sub { font-size: clamp(18px, 2.5vw, 24px); font-weight: 300; color: var(--text-secondary); line-height: 1.5; max-width: 600px; margin: 0 auto 36px; letter-spacing: -0.3px; animation: fadeUp 0.6s 0.2s ease both; }
-    .hero-cta-row { display: flex; gap: 20px; justify-content: center; align-items: center; animation: fadeUp 0.6s 0.3s ease both; }
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    /* STATS */
+    .stats-row { display:flex; justify-content:center; padding:56px 24px; background:var(--white); border-bottom:1px solid var(--gray2); }
+    .stat-item { text-align:center; padding:0 48px; border-right:1px solid var(--gray2); }
+    .stat-item:last-child { border-right:none; }
+    .stat-num { font-size:48px; font-weight:700; letter-spacing:-2px; color:var(--black); line-height:1; }
+    .stat-num sup { font-size:24px; font-weight:500; vertical-align:top; margin-top:6px; display:inline-block; }
+    .stat-label { font-size:14px; color:var(--text-tertiary); margin-top:8px; }
 
-    .cta-pill { display: inline-flex; align-items: center; background: var(--blue); color: #fff; font-size: 17px; font-weight: 400; padding: 12px 24px; border-radius: 980px; text-decoration: none; transition: background 0.15s; }
-    .cta-pill:hover { background: var(--blue-hover); }
-    .cta-link { font-size: 17px; font-weight: 400; color: var(--blue); text-decoration: none; display: inline-flex; align-items: center; transition: color 0.15s; }
-    .cta-link:hover { color: var(--blue-hover); }
-    .cta-link::after { content: ' ›'; }
+    /* SECTION */
+    .section { padding:80px 24px; max-width:1080px; margin:0 auto; }
+    .section-center { text-align:center; }
+    .section-eyebrow { font-size:13px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-tertiary); margin-bottom:8px; }
+    .section-title { font-size:clamp(28px,4vw,48px); font-weight:700; letter-spacing:-1.5px; color:var(--black); line-height:1.1; margin-bottom:16px; }
+    .section-desc { font-size:17px; font-weight:300; color:var(--text-secondary); line-height:1.65; max-width:580px; margin:0 auto 56px; letter-spacing:-0.2px; }
 
-    .stats-row { display: flex; justify-content: center; padding: 56px 24px; background: var(--white); border-bottom: 1px solid var(--gray2); }
-    .stat-item { text-align: center; padding: 0 48px; border-right: 1px solid var(--gray2); }
-    .stat-item:last-child { border-right: none; }
-    .stat-num { font-size: 48px; font-weight: 700; letter-spacing: -2px; color: var(--black); line-height: 1; }
-    .stat-num sup { font-size: 24px; font-weight: 500; vertical-align: top; margin-top: 6px; display: inline-block; }
-    .stat-label { font-size: 14px; color: var(--text-tertiary); margin-top: 8px; }
+    /* SERVICES */
+    .tile-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .tile { background:var(--gray1); border-radius:20px; padding:40px 36px; text-align:left; transition:background 0.2s; min-height:240px; display:flex; flex-direction:column; justify-content:flex-end; }
+    .tile:hover { background:#ebebf0; }
+    .tile-icon { font-size:36px; margin-bottom:auto; padding-bottom:24px; display:block; }
+    .tile-eyebrow { font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:var(--blue); margin-bottom:6px; }
+    .tile-title { font-size:22px; font-weight:700; letter-spacing:-0.6px; color:var(--black); line-height:1.2; margin-bottom:10px; }
+    .tile-desc { font-size:14px; color:var(--text-secondary); line-height:1.6; }
+    .tile-cta { display:inline-flex; align-items:center; margin-top:16px; font-size:14px; color:var(--blue); text-decoration:none; font-weight:500; }
+    .tile-cta::after { content:' ›'; }
+    .tile-cta:hover { color:var(--blue-hover); }
 
-    .section { padding: 80px 24px; max-width: 1080px; margin: 0 auto; }
-    .section-center { text-align: center; }
-    .section-eyebrow { font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 8px; }
-    .section-title { font-size: clamp(28px, 4vw, 48px); font-weight: 700; letter-spacing: -1.5px; color: var(--black); line-height: 1.1; margin-bottom: 16px; }
-    .section-desc { font-size: 17px; font-weight: 300; color: var(--text-secondary); line-height: 1.65; max-width: 580px; margin: 0 auto 56px; letter-spacing: -0.2px; }
+    /* ISO SUPPORTED */
+    .iso-section { background:linear-gradient(160deg,#e8f0fe 0%,#dbeafe 50%,#ede9fe 100%); padding:80px 24px; }
+    .iso-inner { max-width:1080px; margin:0 auto; }
+    .iso-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+    .iso-tile { background:rgba(255,255,255,0.75); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.9); border-radius:16px; padding:32px 28px; transition:background 0.2s,transform 0.2s; }
+    .iso-tile:hover { background:rgba(255,255,255,0.92); transform:translateY(-2px); }
+    .iso-num { font-size:26px; font-weight:700; color:var(--black); letter-spacing:-1px; margin-bottom:4px; }
+    .iso-name { font-size:13px; font-weight:500; color:var(--text-secondary); margin-bottom:16px; }
+    .iso-badge { display:inline-block; background:rgba(0,113,227,0.1); color:var(--blue); font-size:11px; font-weight:600; padding:3px 10px; border-radius:980px; margin-bottom:14px; }
+    .iso-desc { font-size:13px; color:var(--text-secondary); line-height:1.6; }
 
-    .tile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .tile { background: var(--gray1); border-radius: 20px; padding: 40px 36px; text-align: left; transition: background 0.2s; min-height: 240px; display: flex; flex-direction: column; justify-content: flex-end; }
-    .tile:hover { background: #ebebf0; }
-    .tile-icon { font-size: 36px; margin-bottom: auto; padding-bottom: 24px; display: block; }
-    .tile-eyebrow { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--blue); margin-bottom: 6px; }
-    .tile-title { font-size: 22px; font-weight: 700; letter-spacing: -0.6px; color: var(--black); line-height: 1.2; margin-bottom: 10px; }
-    .tile-desc { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
-    .tile-cta { display: inline-flex; align-items: center; margin-top: 16px; font-size: 14px; color: var(--blue); text-decoration: none; font-weight: 500; }
-    .tile-cta::after { content: ' ›'; }
-    .tile-cta:hover { color: var(--blue-hover); }
+    /* ACCORDION STANDARDS */
+    .acc-wrap { padding:80px 24px; background:linear-gradient(160deg,#e8f0fe 0%,#dbeafe 50%,#ede9fe 100%); }
+    .acc-inner { max-width:860px; margin:0 auto; }
+    .cat-label { font-size:11px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-tertiary); margin:28px 0 10px 4px; display:flex; align-items:center; gap:10px; }
+    .cat-label::after { content:''; flex:1; height:1px; background:rgba(0,0,0,0.1); }
+    .cat-label:first-child { margin-top:0; }
+    .acc-list { display:flex; flex-direction:column; gap:8px; }
+    .acc-item { background:rgba(255,255,255,0.78); border:1px solid rgba(255,255,255,0.95); border-radius:16px; overflow:hidden; transition:background 0.2s; }
+    .acc-item.open { background:rgba(255,255,255,0.96); }
+    .acc-header { display:flex; align-items:center; gap:0; padding:18px 24px; cursor:pointer; user-select:none; -webkit-user-select:none; }
+    .acc-badge { font-size:11px; font-weight:600; padding:3px 10px; border-radius:980px; background:rgba(0,113,227,0.1); color:var(--blue); white-space:nowrap; flex-shrink:0; width:80px; text-align:center; }
+    .acc-badge.green { background:rgba(52,199,89,0.12); color:#1a7a35; }
+    .acc-std { font-size:16px; font-weight:700; color:var(--black); letter-spacing:-0.5px; flex-shrink:0; width:160px; padding:0 16px; }
+    .acc-name { font-size:13px; color:var(--text-secondary); font-weight:400; flex:1; }
+    .acc-chevron { width:24px; height:24px; border-radius:50%; background:var(--gray2); display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:transform 0.3s,background 0.2s; font-size:11px; color:var(--text-secondary); margin-left:12px; }
+    .acc-item.open .acc-chevron { transform:rotate(180deg); background:var(--blue); color:#fff; }
+    .acc-body { max-height:0; overflow:hidden; transition:max-height 0.4s cubic-bezier(0.22,1,0.36,1); }
+    .acc-item.open .acc-body { max-height:1400px; }
+    .acc-content { padding:24px 24px 28px; display:grid; grid-template-columns:1fr 1fr; gap:32px; border-top:1px solid var(--gray2); }
+    .col-title { font-size:11px; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; color:var(--text-tertiary); margin-bottom:14px; }
+    .pain-list, .sol-list { display:flex; flex-direction:column; gap:10px; }
+    .pain-item, .sol-item { display:flex; gap:10px; align-items:flex-start; font-size:13px; color:var(--text-primary); line-height:1.6; }
+    .pain-icon { width:20px; height:20px; border-radius:6px; background:#fff0f0; border:1px solid #ffd5d5; display:flex; align-items:center; justify-content:center; font-size:10px; flex-shrink:0; margin-top:1px; color:#c0392b; font-weight:700; }
+    .sol-icon { width:20px; height:20px; border-radius:6px; background:#f0f7ff; border:1px solid #b3d4f7; display:flex; align-items:center; justify-content:center; font-size:10px; flex-shrink:0; margin-top:1px; color:var(--blue); font-weight:700; }
+    .item-text strong { font-weight:600; display:block; font-size:13px; color:var(--black); margin-bottom:1px; }
+    .item-text span { color:var(--text-secondary); font-size:12.5px; }
+    .overview-box { grid-column:1/-1; background:var(--gray1); border-radius:10px; padding:14px 18px; font-size:13px; color:var(--text-secondary); line-height:1.7; margin-bottom:4px; }
+    .overview-box strong { color:var(--black); font-weight:600; }
 
-    .iso-section { background: linear-gradient(160deg, #e8f0fe 0%, #dbeafe 50%, #ede9fe 100%); padding: 80px 24px; }
-    .iso-inner { max-width: 1080px; margin: 0 auto; }
-    .iso-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-    .iso-tile { background: rgba(255,255,255,0.75); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.9); border-radius: 16px; padding: 32px 28px; transition: background 0.2s, transform 0.2s; }
-    .iso-tile:hover { background: rgba(255,255,255,0.92); transform: translateY(-2px); }
-    .iso-num { font-size: 26px; font-weight: 700; color: var(--black); letter-spacing: -1px; margin-bottom: 4px; }
-    .iso-name { font-size: 13px; font-weight: 500; color: var(--text-secondary); margin-bottom: 16px; }
-    .iso-badge { display: inline-block; background: rgba(0,113,227,0.1); color: var(--blue); font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 980px; margin-bottom: 14px; }
-    .iso-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+    /* WHY */
+    .why-section { background:var(--white); padding:80px 24px; border-top:1px solid var(--gray2); }
+    .why-inner { max-width:1080px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:start; }
+    .why-features { display:flex; flex-direction:column; gap:32px; margin-top:40px; }
+    .why-item { display:flex; gap:18px; }
+    .why-icon-wrap { width:40px; height:40px; border-radius:12px; background:var(--gray1); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+    .why-item-title { font-size:16px; font-weight:600; color:var(--black); letter-spacing:-0.3px; margin-bottom:4px; }
+    .why-item-desc { font-size:14px; color:var(--text-secondary); line-height:1.65; }
 
-    .why-section { background: var(--white); padding: 80px 24px; border-top: 1px solid var(--gray2); }
-    .why-inner { max-width: 1080px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
-    .why-features { display: flex; flex-direction: column; gap: 32px; margin-top: 40px; }
-    .why-item { display: flex; gap: 18px; }
-    .why-icon-wrap { width: 40px; height: 40px; border-radius: 12px; background: var(--gray1); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
-    .why-item-title { font-size: 16px; font-weight: 600; color: var(--black); letter-spacing: -0.3px; margin-bottom: 4px; }
-    .why-item-desc { font-size: 14px; color: var(--text-secondary); line-height: 1.65; }
+    /* DASHBOARD */
+    .dashboard-panel { background:var(--gray1); border-radius:20px; padding:28px; }
+    .dp-header { display:flex; align-items:center; gap:6px; margin-bottom:22px; }
+    .dp-dot { width:12px; height:12px; border-radius:50%; }
+    .dp-dot-r { background:#ff5f57; } .dp-dot-y { background:#febc2e; } .dp-dot-g { background:#28c840; }
+    .dp-label { font-size:12px; color:var(--text-tertiary); margin-left:6px; }
+    .dp-prog-rows { display:flex; flex-direction:column; gap:14px; }
+    .dp-prog-label { display:flex; justify-content:space-between; margin-bottom:6px; }
+    .dp-prog-name { font-size:13px; color:var(--text-primary); }
+    .dp-prog-pct { font-size:13px; color:var(--blue); font-weight:500; }
+    .dp-prog-track { height:4px; background:var(--gray3); border-radius:100px; overflow:hidden; }
+    .dp-prog-fill { height:100%; background:var(--blue); border-radius:100px; }
+    .dp-footer { margin-top:24px; padding-top:20px; border-top:1px solid var(--gray2); display:flex; justify-content:space-between; align-items:flex-end; }
+    .dp-total-label { font-size:12px; color:var(--text-tertiary); }
+    .dp-total-num { font-size:32px; font-weight:700; color:var(--black); letter-spacing:-1.5px; line-height:1; margin-top:4px; }
+    .dp-total-num span { font-size:18px; font-weight:500; }
+    .dp-cert-label { font-size:12px; color:var(--text-tertiary); text-align:right; }
+    .dp-cert-val { font-size:15px; font-weight:600; color:var(--blue); text-align:right; margin-top:4px; }
 
-    .dashboard-panel { background: var(--gray1); border-radius: 20px; padding: 28px; }
-    .dp-header { display: flex; align-items: center; gap: 6px; margin-bottom: 22px; }
-    .dp-dot { width: 12px; height: 12px; border-radius: 50%; }
-    .dp-dot-r { background: #ff5f57; } .dp-dot-y { background: #febc2e; } .dp-dot-g { background: #28c840; }
-    .dp-label { font-size: 12px; color: var(--text-tertiary); margin-left: 6px; }
-    .dp-prog-rows { display: flex; flex-direction: column; gap: 14px; }
-    .dp-prog-label { display: flex; justify-content: space-between; margin-bottom: 6px; }
-    .dp-prog-name { font-size: 13px; color: var(--text-primary); }
-    .dp-prog-pct { font-size: 13px; color: var(--blue); font-weight: 500; }
-    .dp-prog-track { height: 4px; background: var(--gray3); border-radius: 100px; overflow: hidden; }
-    .dp-prog-fill { height: 100%; background: var(--blue); border-radius: 100px; }
-    .dp-footer { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--gray2); display: flex; justify-content: space-between; align-items: flex-end; }
-    .dp-total-label { font-size: 12px; color: var(--text-tertiary); }
-    .dp-total-num { font-size: 32px; font-weight: 700; color: var(--black); letter-spacing: -1.5px; line-height: 1; margin-top: 4px; }
-    .dp-total-num span { font-size: 18px; font-weight: 500; }
-    .dp-cert-label { font-size: 12px; color: var(--text-tertiary); text-align: right; }
-    .dp-cert-val { font-size: 15px; font-weight: 600; color: var(--blue); text-align: right; margin-top: 4px; }
+    /* CONTACT */
+    .contact-section { background:var(--gray1); padding:80px 24px; text-align:center; border-top:1px solid var(--gray2); }
+    .contact-inner { max-width:560px; margin:0 auto; }
+    .contact-card { background:var(--white); border-radius:20px; padding:40px; text-align:left; box-shadow:0 4px 24px rgba(0,0,0,0.06); }
+    .contact-input { width:100%; background:var(--gray1); border:1px solid var(--gray2); border-radius:10px; padding:13px 16px; color:var(--text-primary); font-size:15px; font-family:'Inter',sans-serif; outline:none; transition:border-color 0.2s,background 0.2s; margin-bottom:12px; display:block; -webkit-appearance:none; }
+    .contact-input::placeholder { color:var(--text-tertiary); }
+    .contact-input:focus { border-color:var(--blue); background:var(--white); }
+    textarea.contact-input { resize:vertical; min-height:100px; line-height:1.6; }
+    .contact-submit { width:100%; background:var(--blue); color:#fff; padding:14px; border-radius:980px; font-size:17px; font-weight:400; border:none; cursor:pointer; font-family:'Inter',sans-serif; margin-top:4px; transition:background 0.15s; }
+    .contact-submit:hover { background:var(--blue-hover); }
 
-    .contact-section { background: var(--gray1); padding: 80px 24px; text-align: center; border-top: 1px solid var(--gray2); }
-    .contact-inner { max-width: 560px; margin: 0 auto; }
-    .contact-card { background: var(--white); border-radius: 20px; padding: 40px; text-align: left; box-shadow: 0 4px 24px rgba(0,0,0,0.06); }
-    .contact-input { width: 100%; background: var(--gray1); border: 1px solid var(--gray2); border-radius: 10px; padding: 13px 16px; color: var(--text-primary); font-size: 15px; font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.2s, background 0.2s; margin-bottom: 12px; display: block; -webkit-appearance: none; }
-    .contact-input::placeholder { color: var(--text-tertiary); }
-    .contact-input:focus { border-color: var(--blue); background: var(--white); }
-    textarea.contact-input { resize: vertical; min-height: 100px; line-height: 1.6; }
-    .contact-submit { width: 100%; background: var(--blue); color: #fff; padding: 14px; border-radius: 980px; font-size: 17px; font-weight: 400; border: none; cursor: pointer; font-family: 'Inter', sans-serif; margin-top: 4px; transition: background 0.15s; }
-    .contact-submit:hover { background: var(--blue-hover); }
+    /* FOOTER */
+    footer { background:var(--gray1); border-top:1px solid var(--gray2); padding:20px 24px; }
+    .footer-top { max-width:1080px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; padding-bottom:16px; border-bottom:1px solid var(--gray2); }
+    .footer-logo { font-size:18px; font-weight:700; letter-spacing:-0.6px; color:var(--black); }
+    .footer-logo .q-accent { color:var(--blue); }
+    .footer-links { display:flex; gap:20px; list-style:none; }
+    .footer-links a { font-size:12px; color:var(--text-tertiary); text-decoration:none; }
+    .footer-links a:hover { color:var(--text-secondary); }
+    .footer-bottom { max-width:1080px; margin:12px auto 0; font-size:12px; color:var(--text-tertiary); }
 
-    footer { background: var(--gray1); border-top: 1px solid var(--gray2); padding: 20px 24px; }
-    .footer-top { max-width: 1080px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding-bottom: 16px; border-bottom: 1px solid var(--gray2); }
-    .footer-logo { font-size: 18px; font-weight: 700; letter-spacing: -0.6px; color: var(--black); }
-    .footer-logo .q-accent { color: var(--blue); }
-    .footer-links { display: flex; gap: 20px; list-style: none; }
-    .footer-links a { font-size: 12px; color: var(--text-tertiary); text-decoration: none; }
-    .footer-links a:hover { color: var(--text-secondary); }
-    .footer-bottom { max-width: 1080px; margin: 12px auto 0; font-size: 12px; color: var(--text-tertiary); }
-
-    @media (max-width: 768px) {
-      .tile-grid { grid-template-columns: 1fr; }
-      .iso-grid { grid-template-columns: 1fr 1fr; }
-      .why-inner { grid-template-columns: 1fr; gap: 40px; }
-      .nav-links { display: none; }
-      .stats-row { flex-wrap: wrap; gap: 32px; }
-      .stat-item { border-right: none; padding: 0 24px; }
+    @media (max-width:768px) {
+      .tile-grid { grid-template-columns:1fr; }
+      .iso-grid { grid-template-columns:1fr 1fr; }
+      .why-inner { grid-template-columns:1fr; gap:40px; }
+      .nav-links { display:none; }
+      .stats-row { flex-wrap:wrap; gap:32px; }
+      .stat-item { border-right:none; padding:0 24px; }
+      .acc-content { grid-template-columns:1fr; gap:20px; }
+      .acc-std { width:120px; }
+      .acc-name { display:none; }
+      .overview-box { grid-column:1; }
     }
   </style>
 </head>
 <body>
 
+<!-- NAV -->
 <nav>
   <a class="nav-logo" href="#">quali<span class="q-accent">xx</span></a>
   <ul class="nav-links">
@@ -163,6 +183,7 @@
   </ul>
 </nav>
 
+<!-- HERO -->
 <div class="hero">
   <div class="hero-eyebrow">AI-Powered QMS Platform</div>
   <h1>quali<span class="q-accent">xx</span></h1>
@@ -173,6 +194,7 @@
   </div>
 </div>
 
+<!-- STATS -->
 <div class="stats-row">
   <div class="stat-item"><div class="stat-num">4<sup>+</sup></div><div class="stat-label">지원 ISO 표준</div></div>
   <div class="stat-item"><div class="stat-num">80<sup>%</sup></div><div class="stat-label">구축 시간 절감</div></div>
@@ -180,6 +202,7 @@
   <div class="stat-item"><div class="stat-num">24<sup>/7</sup></div><div class="stat-label">실시간 모니터링</div></div>
 </div>
 
+<!-- SERVICES -->
 <div class="section section-center" id="services">
   <div class="section-eyebrow">Core Services</div>
   <h2 class="section-title">모든 규모의 기업을 위한<br>QMS 솔루션</h2>
@@ -192,9 +215,10 @@
   </div>
 </div>
 
+<!-- ISO SUPPORTED STANDARDS -->
 <div class="iso-section" id="standards">
   <div class="iso-inner">
-    <div style="text-align:center; margin-bottom:48px;">
+    <div style="text-align:center;margin-bottom:48px;">
       <div class="section-eyebrow" style="color:#5b8dee;">Supported Standards</div>
       <h2 class="section-title">주요 ISO 표준 전부 지원</h2>
       <p class="section-desc">qualixx는 다양한 국제 표준을 하나의 통합 플랫폼에서 관리합니다.</p>
@@ -208,6 +232,230 @@
   </div>
 </div>
 
+<!-- ACCORDION: 표준별 도전과제 & 해결책 -->
+<div class="acc-wrap">
+  <div class="acc-inner">
+    <div style="text-align:center;margin-bottom:48px;">
+      <div class="section-eyebrow" style="color:#5b8dee;">Standards Deep Dive</div>
+      <h2 class="section-title">표준 · 규정별 도전과제와 qualixx 해결책</h2>
+      <p class="section-desc">각 표준과 규정이 기업에 요구하는 것과 실제 어려움, 그리고 qualixx가 어떻게 해결하는지 확인하세요.</p>
+    </div>
+
+    <div class="acc-list">
+
+      <div class="cat-label">ISO 품질경영</div>
+
+      <div class="acc-item">
+        <div class="acc-header" onclick="toggle(this)"><div class="acc-badge">범용</div><div class="acc-std">ISO 9001</div><div class="acc-name">품질경영시스템</div><div class="acc-chevron">▾</div></div>
+        <div class="acc-body"><div class="acc-content">
+          <div><div class="col-title">기업의 어려움</div><div class="pain-list">
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>방대한 문서화 부담</strong><span>수십 개 절차서·지침서를 직접 작성하고 최신 버전으로 유지하는 데 막대한 시간 소요</span></div></div>
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>내부 심사 인력 부족</strong><span>전담 품질팀 없이 주기적 내부 심사 수행이 어렵고 일정도 자주 밀림</span></div></div>
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>형식적 운영</strong><span>인증 취득 후 실제 업무와 QMS가 분리되어 서류상으로만 존재하는 시스템이 됨</span></div></div>
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>전 부서 참여 어려움</strong><span>품질 관리가 품질팀만의 업무로 인식되어 타 부서 협조를 이끌어내기 힘듦</span></div></div>
+          </div></div>
+          <div><div class="col-title">qualixx 해결책</div><div class="sol-list">
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>자동 문서 생성</strong><span>표준 요구사항 기반 템플릿으로 필수 문서를 자동 생성하고 버전 관리까지 자동화</span></div></div>
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>AI 심사 체크리스트</strong><span>AI가 심사 항목을 자동 생성하고 진행 상황을 추적하여 비전문가도 심사 가능</span></div></div>
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>업무 연동 플랫폼</strong><span>실제 업무 프로세스와 QMS를 통합하여 일상 업무 속에서 자연스럽게 품질 관리</span></div></div>
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>부서별 맞춤 대시보드</strong><span>각 부서가 자신의 품질 지표를 직접 확인·관리할 수 있는 역할별 인터페이스 제공</span></div></div>
+          </div></div>
+        </div></div>
+      </div>
+
+      <div class="acc-item">
+        <div class="acc-header" onclick="toggle(this)"><div class="acc-badge">환경경영</div><div class="acc-std">ISO 14001</div><div class="acc-name">환경경영시스템</div><div class="acc-chevron">▾</div></div>
+        <div class="acc-body"><div class="acc-content">
+          <div><div class="col-title">기업의 어려움</div><div class="pain-list">
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>환경 측면·영향 식별</strong><span>사업 활동에서 발생하는 모든 환경 측면을 파악하고 유의한 영향을 평가하는 작업이 복잡함</span></div></div>
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>법적 요구사항 추적</strong><span>환경 관련 법령·규제는 수시로 개정되는데 이를 실시간으로 파악하고 준수 여부를 확인하기 어려움</span></div></div>
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>환경 목표 관리</strong><span>탄소·폐수·폐기물 등 환경 목표를 수치로 설정하고 달성 현황을 모니터링하기 번거로움</span></div></div>
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>비상 대응 체계 구축</strong><span>환경 사고 발생 시 대응 절차를 사전에 수립하고 주기적으로 훈련·검증하는 체계가 미흡</span></div></div>
+          </div></div>
+          <div><div class="col-title">qualixx 해결책</div><div class="sol-list">
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>환경 측면 자동 분류</strong><span>업종별 환경 측면 카탈로그 기반으로 중요도 평가를 자동화하고 우선순위 제시</span></div></div>
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>법령 변경 자동 모니터링</strong><span>환경 관련 법령 개정 사항을 실시간 추적하고 영향받는 프로세스에 자동 연결</span></div></div>
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>환경 KPI 대시보드</strong><span>탄소·폐기물·에너지 지표를 실시간 집계하여 목표 달성 현황을 한눈에 시각화</span></div></div>
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>비상 대응 시나리오 관리</strong><span>환경 사고 유형별 대응 절차를 표준화하고 훈련 일정을 자동 스케줄링</span></div></div>
+          </div></div>
+        </div></div>
+      </div>
+
+      <div class="acc-item">
+        <div class="acc-header" onclick="toggle(this)"><div class="acc-badge">안전보건</div><div class="acc-std">ISO 45001</div><div class="acc-name">안전보건 관리시스템</div><div class="acc-chevron">▾</div></div>
+        <div class="acc-body"><div class="acc-content">
+          <div><div class="col-title">기업의 어려움</div><div class="pain-list">
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>위험성 평가 전문성 부족</strong><span>작업장 내 유해·위험 요인을 체계적으로 파악하고 수준을 평가하는 전문 인력이 부족함</span></div></div>
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>사고·아차사고 기록 관리</strong><span>크고 작은 사고와 아차사고를 빠짐없이 기록하고 원인 분석 및 재발 방지 조치로 연결하기 어려움</span></div></div>
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>근로자 참여 확보</strong><span>안전보건 활동에 현장 근로자의 적극적 참여를 이끌어내고 의견을 반영하는 체계 마련이 미흡</span></div></div>
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>교육 이수 관리</strong><span>직무별 필수 안전 교육 대상자를 관리하고 미이수자를 추적하는 행정 부담이 큼</span></div></div>
+          </div></div>
+          <div><div class="col-title">qualixx 해결책</div><div class="sol-list">
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>AI 위험성 평가 지원</strong><span>작업 유형별 위험 요인 DB 기반으로 평가 프로세스를 단계별로 자동 안내</span></div></div>
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>사고 보고 자동화</strong><span>모바일 기반 간편 보고 기능으로 현장에서 즉시 기록하고 CAPA와 자동 연동</span></div></div>
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>근로자 참여 채널 구축</strong><span>디지털 의견 수렴 플랫폼으로 근로자 제안·불만을 체계적으로 수집하고 처리 현황 공유</span></div></div>
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>교육 이수 자동 추적</strong><span>직무별 필수 교육을 자동 배정하고 이수 현황을 실시간 모니터링하여 미이수자 알림</span></div></div>
+          </div></div>
+        </div></div>
+      </div>
+
+      <div class="acc-item">
+        <div class="acc-header" onclick="toggle(this)"><div class="acc-badge">에너지경영</div><div class="acc-std">ISO 50001</div><div class="acc-name">에너지경영시스템</div><div class="acc-chevron">▾</div></div>
+        <div class="acc-body"><div class="acc-content">
+          <div><div class="col-title">기업의 어려움</div><div class="pain-list">
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>에너지 데이터 수집·분석</strong><span>전기·가스·열에너지 등 다양한 에너지원 소비 데이터를 통합 수집하고 분석하는 체계가 없음</span></div></div>
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>에너지 기준선 설정</strong><span>성과 개선을 측정하기 위한 기준선(EnB)과 성과 지표(EnPI)를 설정하기 어려움</span></div></div>
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>에너지 절감 목표 관리</strong><span>목표를 수립해도 달성 현황을 실시간 파악하고 원인 분석·대응하는 체계가 미흡</span></div></div>
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>탄소중립·ESG 연계</strong><span>에너지 관리 데이터를 ESG 보고서·탄소중립 계획과 연결하는 작업이 수작업으로 이루어짐</span></div></div>
+          </div></div>
+          <div><div class="col-title">qualixx 해결책</div><div class="sol-list">
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>에너지 통합 수집 플랫폼</strong><span>다양한 에너지원 데이터를 단일 플랫폼에서 수집·통합하여 실시간 소비 현황 파악</span></div></div>
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>EnB·EnPI 자동 산정</strong><span>과거 데이터를 분석하여 최적 기준선을 자동 산출하고 성과 지표를 지속 업데이트</span></div></div>
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>에너지 목표 모니터링</strong><span>절감 목표 대비 실적을 실시간 추적하고 이상 소비 패턴 감지 시 자동 알림 발송</span></div></div>
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>ESG 보고 자동 연계</strong><span>에너지 데이터를 GHG 배출량 및 ESG 공시 항목과 자동 연결하여 보고 부담 최소화</span></div></div>
+          </div></div>
+        </div></div>
+      </div>
+
+      <div class="cat-label">정보 · AI 관리</div>
+
+      <div class="acc-item">
+        <div class="acc-header" onclick="toggle(this)"><div class="acc-badge">정보보안</div><div class="acc-std">ISO 27001</div><div class="acc-name">정보보안 관리시스템</div><div class="acc-chevron">▾</div></div>
+        <div class="acc-body"><div class="acc-content">
+          <div><div class="col-title">기업의 어려움</div><div class="pain-list">
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>정보자산 목록 관리</strong><span>조직 내 모든 정보자산을 파악·분류하는 작업이 방대하고 변경사항 반영이 자주 누락됨</span></div></div>
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>리스크 평가 방법 부재</strong><span>IT 비전문가가 보안 리스크를 식별하고 가능성·영향도를 평가하는 방법론 자체를 모름</span></div></div>
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>93개 통제항목 적용</strong><span>어떤 항목을 적용해야 하는지, 적용 제외 근거를 어떻게 문서화해야 하는지 막막함</span></div></div>
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>주기적 재평가 부담</strong><span>매년 리스크 재평가·내부 심사를 수행해야 하지만 담당자 교체 시 연속성이 끊김</span></div></div>
+          </div></div>
+          <div><div class="col-title">qualixx 해결책</div><div class="sol-list">
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>자산 자동 등록·분류</strong><span>자산 등록 프로세스를 표준화하고 변경 발생 시 자동 알림으로 목록 최신성 유지</span></div></div>
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>AI 리스크 평가 가이드</strong><span>업종·규모에 맞는 리스크 시나리오를 AI가 제안하고 평가 기준을 단계별로 안내</span></div></div>
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>통제항목 자동 매핑 & SOA</strong><span>조직 특성에 맞는 통제항목을 자동 추천하고 적용/제외 근거를 SOA 문서로 자동 생성</span></div></div>
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>자동 일정·알림 관리</strong><span>재평가·심사 주기를 시스템이 자동 추적하고 담당자에게 사전 알림 및 체크리스트 발송</span></div></div>
+          </div></div>
+        </div></div>
+      </div>
+
+      <div class="acc-item">
+        <div class="acc-header" onclick="toggle(this)"><div class="acc-badge">AI 관리</div><div class="acc-std">ISO 42001</div><div class="acc-name">AI 관리시스템</div><div class="acc-chevron">▾</div></div>
+        <div class="acc-body"><div class="acc-content">
+          <div><div class="col-title">기업의 어려움</div><div class="pain-list">
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>표준 자체의 생소함</strong><span>2023년 신규 제정으로 참고 사례·가이드가 극히 부족하고 전문 컨설턴트도 경험이 적음</span></div></div>
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>AI 리스크 평가 방법 부재</strong><span>AI의 편향성·오작동·보안 취약점 등을 어떤 기준으로 평가해야 하는지 방법론이 없음</span></div></div>
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>AI 거버넌스 체계 전무</strong><span>AI를 이미 사용하고 있지만 책임 소재·의사결정 기준·모니터링 방법이 전혀 정의되지 않음</span></div></div>
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>지속적 모니터링 어려움</strong><span>AI 시스템은 운영 중에도 성능이 변화하므로 지속 모니터링이 필요하나 전담 인력이 없음</span></div></div>
+          </div></div>
+          <div><div class="col-title">qualixx 해결책</div><div class="sol-list">
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>최신 표준 내장 가이드</strong><span>ISO 42001 요구사항을 쉬운 언어로 풀어낸 단계별 구축 가이드와 실제 적용 사례 제공</span></div></div>
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>AI 리스크 프레임워크</strong><span>AI 유형별 리스크 카탈로그와 평가 기준을 제공하여 체계적 리스크 식별 및 처리 지원</span></div></div>
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>거버넌스 구조 자동 설계</strong><span>조직 규모와 AI 활용 현황에 맞는 거버넌스 구조와 역할·책임을 자동으로 설계·문서화</span></div></div>
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>AI 성과 자동 모니터링</strong><span>AI 시스템 주요 지표를 자동 수집·분석하고 이상 징후 발생 시 즉시 담당자에게 알림</span></div></div>
+          </div></div>
+        </div></div>
+      </div>
+
+      <div class="cat-label">의료기기 규제 인증</div>
+
+      <div class="acc-item">
+        <div class="acc-header" onclick="toggle(this)"><div class="acc-badge green">의료기기</div><div class="acc-std">ISO 13485</div><div class="acc-name">의료기기 품질경영시스템</div><div class="acc-chevron">▾</div></div>
+        <div class="acc-body"><div class="acc-content">
+          <div><div class="col-title">기업의 어려움</div><div class="pain-list">
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>설계변경 이력 추적</strong><span>제품 개발 중 발생하는 수많은 설계변경을 체계적으로 기록하고 규제기관에 증명하기 어려움</span></div></div>
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>CAPA 관리 복잡성</strong><span>부적합 원인 분석부터 시정조치, 효과성 검증까지 복잡한 프로세스를 일관되게 운영하기 힘듦</span></div></div>
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>공급업체 관리 부담</strong><span>다수 공급업체의 적격성 평가·재평가·성과 모니터링을 주기적으로 수행하는 데 인력 소모</span></div></div>
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>각국 규제 동시 대응</strong><span>MFDS·FDA·CE 등 국가별로 다른 규제 요구사항에 동시에 대응하는 문서 체계 구축이 어려움</span></div></div>
+          </div></div>
+          <div><div class="col-title">qualixx 해결책</div><div class="sol-list">
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>설계변경 자동 추적</strong><span>모든 변경사항을 자동 기록하고 DHF와 연동하여 언제든지 감사 추적 가능한 이력 제공</span></div></div>
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>CAPA 워크플로우 자동화</strong><span>AI가 근본원인 분석을 지원하고 조치 완료 후 효과성 검증까지 자동 스케줄링</span></div></div>
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>공급업체 통합 관리</strong><span>평가 주기를 자동 관리하고 성과 데이터를 집계하여 재평가 시점에 자동 알림 발송</span></div></div>
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>다중 규제 자동 매핑</strong><span>하나의 문서 체계로 각국 규제 요구사항을 자동 매핑하여 다국가 인증 동시 준비</span></div></div>
+          </div></div>
+        </div></div>
+      </div>
+
+      <div class="acc-item">
+        <div class="acc-header" onclick="toggle(this)"><div class="acc-badge green">국내 규제</div><div class="acc-std">KGMP</div><div class="acc-name">의료기기 제조·품질관리기준 (식약처)</div><div class="acc-chevron">▾</div></div>
+        <div class="acc-body"><div class="acc-content">
+          <div class="overview-box"><strong>KGMP란?</strong> 식품의약품안전처(MFDS)가 고시한 국내 의료기기 제조·품질관리 기준으로, 국내에서 의료기기를 제조·판매하려면 반드시 취득해야 하는 필수 인증입니다. ISO 13485를 기반으로 하되 국내 규제 특성이 추가 반영되어 있으며, 정기 사후관리 심사와 변경 허가·신고가 엄격하게 적용됩니다.</div>
+          <div><div class="col-title">기업의 어려움</div><div class="pain-list">
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>허가·신고 변경 관리</strong><span>제품·공정·시설 변경 시 식약처에 변경 허가 또는 신고해야 하는데 변경 범위 판단과 절차가 복잡함</span></div></div>
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>정기 사후관리 심사 준비</strong><span>3년마다 실시하는 KGMP 사후심사를 위해 매번 대규모 문서 정비와 현장 준비가 필요함</span></div></div>
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>밸리데이션 기록 관리</strong><span>제조 공정·멸균·소프트웨어 등에 대한 밸리데이션 계획·수행·보고서를 체계적으로 유지하기 어려움</span></div></div>
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>국문 기록 이중 관리</strong><span>ISO 13485 영문 문서와 식약처 요구 국문 기록을 별도로 유지하는 이중 작업에 시간 소모가 큼</span></div></div>
+          </div></div>
+          <div><div class="col-title">qualixx 해결책</div><div class="sol-list">
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>변경 유형 자동 판단</strong><span>변경 내용 입력 시 허가·신고·보고 여부를 자동 판단하고 필요 서류 목록과 절차를 안내</span></div></div>
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>심사 대비 자동 점검</strong><span>KGMP 심사 항목별 충족 현황을 상시 모니터링하여 심사 전 미비 사항을 사전에 파악</span></div></div>
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>밸리데이션 문서 통합 관리</strong><span>계획서·프로토콜·보고서를 하나의 흐름으로 연결하고 재밸리데이션 주기를 자동 관리</span></div></div>
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>한·영 문서 자동 연동</strong><span>ISO 13485와 KGMP 요구사항을 단일 문서 체계에서 관리하여 이중 작업 없이 동시 충족</span></div></div>
+          </div></div>
+        </div></div>
+      </div>
+
+      <div class="acc-item">
+        <div class="acc-header" onclick="toggle(this)"><div class="acc-badge green">유럽 규제</div><div class="acc-std">EU MDR/IVDR</div><div class="acc-name">유럽 의료기기·체외진단기기 규정</div><div class="acc-chevron">▾</div></div>
+        <div class="acc-body"><div class="acc-content">
+          <div class="overview-box"><strong>EU MDR/IVDR이란?</strong> EU MDR(Regulation 2017/745)은 2021년 5월, EU IVDR(Regulation 2017/746)은 2022년 5월부터 단계적으로 시행된 유럽 의료기기 및 체외진단기기 규정입니다. 기존 MDD/IVDD 지침을 대체하며 CE 마킹 요건이 대폭 강화되었습니다. 임상 데이터 요건, PMS/PSUR, UDI 등록, EUDAMED 공시 등 새로운 의무가 대거 추가되어 유럽 시장 진출 기업 모두에게 적용됩니다.</div>
+          <div><div class="col-title">기업의 어려움</div><div class="pain-list">
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>강화된 임상 데이터 요건</strong><span>임상평가(CER) 및 성능평가(PER) 요건이 대폭 강화되어 충분한 임상 근거 확보와 문서 작성에 막대한 시간과 비용이 소요됨</span></div></div>
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>PMS·PSUR·PMCF 체계 구축</strong><span>시판 후 조사(PMS) 계획, 주기적 안전성 업데이트 보고서(PSUR), 시판 후 임상 추적(PMCF) 활동을 지속적으로 수행하고 갱신해야 함</span></div></div>
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>UDI 등록 및 EUDAMED 관리</strong><span>모든 제품에 UDI를 부여하고 EUDAMED에 등록·갱신하는 행정 부담이 크며 오류 발생 시 규제 리스크가 높음</span></div></div>
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>방대한 기술문서 요구량</strong><span>MDR/IVDR Annex II·III 요구 기술문서는 기존 대비 분량과 상세 수준이 크게 증가하여 전문 인력이 필수적임</span></div></div>
+          </div></div>
+          <div><div class="col-title">qualixx 해결책</div><div class="sol-list">
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>CER·PER 작성 지원 도구</strong><span>임상·성능평가 보고서 구조와 필수 항목을 자동 제안하고 문헌 검색 결과를 체계적으로 관리하는 워크플로우 제공</span></div></div>
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>PMS·PSUR·PMCF 자동 스케줄링</strong><span>각 문서의 갱신 주기를 자동 관리하고 기한 도래 시 담당자에게 알림 및 작성 가이드 자동 발송</span></div></div>
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>UDI·EUDAMED 통합 관리</strong><span>제품별 UDI 정보를 중앙에서 관리하고 EUDAMED 등록·갱신 일정과 필요 데이터를 자동으로 추적</span></div></div>
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>MDR·IVDR 기술문서 자동 구성</strong><span>Annex 요구사항에 맞는 기술문서 구조를 자동 생성하고 항목별 충족 현황을 실시간 모니터링</span></div></div>
+          </div></div>
+        </div></div>
+      </div>
+
+      <div class="acc-item">
+        <div class="acc-header" onclick="toggle(this)"><div class="acc-badge green">미국 규제</div><div class="acc-std">FDA QMSR</div><div class="acc-name">미국 의료기기 품질시스템 규정 (21 CFR Part 820)</div><div class="acc-chevron">▾</div></div>
+        <div class="acc-body"><div class="acc-content">
+          <div class="overview-box"><strong>US FDA QMSR이란?</strong> 2024년 2월 FDA가 기존 QSR(21 CFR Part 820)을 전면 개정하여 발표한 Quality Management System Regulation(QMSR)입니다. ISO 13485:2016을 핵심 기반으로 통합하면서 FDA 고유 요건을 추가한 형태로, 2026년 2월부터 의무 적용됩니다. 미국 시장에 의료기기를 판매하는 모든 제조사에게 적용됩니다.</div>
+          <div><div class="col-title">기업의 어려움</div><div class="pain-list">
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>QSR→QMSR 전환 부담</strong><span>기존 QSR 기반 QMS를 QMSR 요건에 맞게 전환해야 하는데 변경 범위 파악과 갭 분석이 쉽지 않음</span></div></div>
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>FDA 고유 추가 요건 대응</strong><span>ISO 13485 기반이지만 MDR 보고, 리콜, 시정·제거 등 FDA 특유의 추가 요건을 별도로 충족해야 함</span></div></div>
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>DHR·DMR 기록 관리</strong><span>Device History Record(DHR)와 Device Master Record(DMR)를 완전·정확하게 유지하고 FDA 실사 시 즉시 제출 가능해야 함</span></div></div>
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>FDA 실사(inspection) 대비</strong><span>사전 예고 없이 진행될 수 있는 FDA 실사에 대비하여 모든 기록과 절차를 항상 최신·준수 상태로 유지해야 함</span></div></div>
+          </div></div>
+          <div><div class="col-title">qualixx 해결책</div><div class="sol-list">
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>QSR→QMSR 갭 분석 자동화</strong><span>기존 QMS 현황을 입력하면 QMSR 전환을 위한 갭 항목을 자동 식별하고 우선순위별 전환 로드맵 제시</span></div></div>
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>FDA 추가 요건 통합 관리</strong><span>MDR 보고, 리콜, 시정·제거 기록 등 FDA 고유 요건을 ISO 13485 프로세스와 통합하여 동시 충족</span></div></div>
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>DHR·DMR 자동 생성·관리</strong><span>생산 및 설계 데이터를 자동 집계하여 DHR·DMR을 실시간으로 유지하고 즉시 출력 가능한 형태로 관리</span></div></div>
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>FDA 실사 대비 상시 점검</strong><span>QMSR 요건별 준수 현황을 상시 모니터링하여 실사 준비 점수를 제공하고 미비 사항 발생 시 즉시 알림</span></div></div>
+          </div></div>
+        </div></div>
+      </div>
+
+      <div class="acc-item">
+        <div class="acc-header" onclick="toggle(this)"><div class="acc-badge green">다국가 규제</div><div class="acc-std">MDSAP</div><div class="acc-name">의료기기 단일 심사 프로그램</div><div class="acc-chevron">▾</div></div>
+        <div class="acc-body"><div class="acc-content">
+          <div class="overview-box"><strong>MDSAP란?</strong> Medical Device Single Audit Program의 약자로, 미국(FDA)·캐나다(HC)·브라질(ANVISA)·일본(PMDA)·호주(TGA) 5개국 규제기관이 공동으로 인정하는 단일 심사 프로그램입니다. 한 번의 심사로 5개국 규제 요구사항을 동시에 충족할 수 있어 글로벌 의료기기 수출 기업에게 필수적입니다.</div>
+          <div><div class="col-title">기업의 어려움</div><div class="pain-list">
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>5개국 규제 동시 충족</strong><span>FDA 21 CFR Part 820, 캐나다 CMDR 등 각국 규제의 세부 요구사항 차이를 파악하고 동시에 반영하기 어려움</span></div></div>
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>프로세스 기반 심사 방식</strong><span>MDSAP는 기존 ISO 13485 심사와 달리 프로세스 기반 심사 방식을 적용하여 준비 방법 자체가 다름</span></div></div>
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>부적합 등급 관리</strong><span>MDSAP는 부적합을 Grade 1~3으로 분류하며 등급별 대응 기한이 달라 체계적 관리가 필요함</span></div></div>
+            <div class="pain-item"><div class="pain-icon">✕</div><div class="item-text"><strong>연간 심사 지속 대비</strong><span>매년 실시되는 정기 심사를 위해 문서와 기록을 연중 최신 상태로 유지하는 데 상당한 노력이 필요함</span></div></div>
+          </div></div>
+          <div><div class="col-title">qualixx 해결책</div><div class="sol-list">
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>다국가 규제 갭 분석</strong><span>ISO 13485 대비 각국 추가 요구사항을 자동으로 분석하고 미충족 항목을 우선순위별로 제시</span></div></div>
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>MDSAP 프로세스 매핑</strong><span>7개 프로세스 기반 심사 구조에 맞게 문서와 기록을 자동으로 정렬하여 심사 준비 간소화</span></div></div>
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>부적합 등급별 자동 관리</strong><span>부적합 등급에 따른 처리 기한을 자동 설정하고 마감일 임박 시 담당자에게 에스컬레이션 알림</span></div></div>
+            <div class="sol-item"><div class="sol-icon">✓</div><div class="item-text"><strong>연중 심사 준비 상태 유지</strong><span>MDSAP 체크리스트 기반으로 준비 현황을 상시 모니터링하여 언제든지 심사 대응 가능한 상태 유지</span></div></div>
+          </div></div>
+        </div></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- WHY QUALIXX -->
 <div class="why-section" id="why">
   <div class="why-inner">
     <div>
@@ -223,10 +471,7 @@
     </div>
     <div>
       <div class="dashboard-panel">
-        <div class="dp-header">
-          <div class="dp-dot dp-dot-r"></div><div class="dp-dot dp-dot-y"></div><div class="dp-dot dp-dot-g"></div>
-          <span class="dp-label">인증 준비 현황</span>
-        </div>
+        <div class="dp-header"><div class="dp-dot dp-dot-r"></div><div class="dp-dot dp-dot-y"></div><div class="dp-dot dp-dot-g"></div><span class="dp-label">인증 준비 현황</span></div>
         <div class="dp-prog-rows">
           <div><div class="dp-prog-label"><span class="dp-prog-name">ISO 9001 문서화</span><span class="dp-prog-pct">92%</span></div><div class="dp-prog-track"><div class="dp-prog-fill" style="width:92%;"></div></div></div>
           <div><div class="dp-prog-label"><span class="dp-prog-name">내부 심사 완료</span><span class="dp-prog-pct">78%</span></div><div class="dp-prog-track"><div class="dp-prog-fill" style="width:78%;"></div></div></div>
@@ -243,6 +488,7 @@
   </div>
 </div>
 
+<!-- CONTACT -->
 <div class="contact-section" id="contact">
   <div class="contact-inner">
     <div class="section-eyebrow">Contact Us</div>
@@ -259,6 +505,7 @@
   </div>
 </div>
 
+<!-- FOOTER -->
 <footer>
   <div class="footer-top">
     <div class="footer-logo">quali<span class="q-accent">xx</span></div>
@@ -272,6 +519,13 @@
 </footer>
 
 <script>
+  function toggle(header) {
+    const item = header.parentElement;
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.acc-item').forEach(i => i.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  }
+
   document.getElementById('sendBtn').addEventListener('click', function () {
     var company = document.getElementById('f-company').value.trim();
     var name    = document.getElementById('f-name').value.trim();
@@ -283,13 +537,7 @@
       return;
     }
     var subject = encodeURIComponent('[qualixx 문의] ' + company + ' - ' + name);
-    var body = encodeURIComponent(
-      '회사명: ' + company + '\n' +
-      '담당자: ' + name + '\n' +
-      '이메일: ' + email + '\n' +
-      '연락처: ' + (tel || '미입력') + '\n\n' +
-      '문의 내용:\n' + msg
-    );
+    var body = encodeURIComponent('회사명: ' + company + '\n담당자: ' + name + '\n이메일: ' + email + '\n연락처: ' + (tel || '미입력') + '\n\n문의 내용:\n' + msg);
     window.location.href = 'mailto:support@qualixx.ai?subject=' + subject + '&body=' + body;
   });
 </script>
