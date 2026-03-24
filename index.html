@@ -32,7 +32,6 @@
       overflow-x: hidden;
     }
 
-    /* NAV */
     nav {
       position: sticky; top: 0; z-index: 200;
       background: rgba(255,255,255,0.85);
@@ -49,10 +48,10 @@
     .nav-links a:hover { color: var(--text-primary); }
     .nav-cta-link { color: var(--blue) !important; }
 
-    /* HERO */
     .hero { background: var(--gray1); text-align: center; padding: 96px 24px 80px; }
     .hero-eyebrow { font-size: 17px; font-weight: 600; color: var(--blue); margin-bottom: 8px; animation: fadeUp 0.6s ease both; }
     .hero h1 { font-size: clamp(48px, 8vw, 96px); font-weight: 700; letter-spacing: -3px; line-height: 1.04; color: var(--black); margin-bottom: 20px; animation: fadeUp 0.6s 0.1s ease both; }
+    .hero h1 .q-accent { color: var(--blue); }
     .hero-sub { font-size: clamp(18px, 2.5vw, 24px); font-weight: 300; color: var(--text-secondary); line-height: 1.5; max-width: 600px; margin: 0 auto 36px; letter-spacing: -0.3px; animation: fadeUp 0.6s 0.2s ease both; }
     .hero-cta-row { display: flex; gap: 20px; justify-content: center; align-items: center; animation: fadeUp 0.6s 0.3s ease both; }
     @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -63,7 +62,6 @@
     .cta-link:hover { color: var(--blue-hover); }
     .cta-link::after { content: ' ›'; }
 
-    /* STATS */
     .stats-row { display: flex; justify-content: center; padding: 56px 24px; background: var(--white); border-bottom: 1px solid var(--gray2); }
     .stat-item { text-align: center; padding: 0 48px; border-right: 1px solid var(--gray2); }
     .stat-item:last-child { border-right: none; }
@@ -71,14 +69,12 @@
     .stat-num sup { font-size: 24px; font-weight: 500; vertical-align: top; margin-top: 6px; display: inline-block; }
     .stat-label { font-size: 14px; color: var(--text-tertiary); margin-top: 8px; }
 
-    /* SECTION */
     .section { padding: 80px 24px; max-width: 1080px; margin: 0 auto; }
     .section-center { text-align: center; }
     .section-eyebrow { font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 8px; }
     .section-title { font-size: clamp(28px, 4vw, 48px); font-weight: 700; letter-spacing: -1.5px; color: var(--black); line-height: 1.1; margin-bottom: 16px; }
     .section-desc { font-size: 17px; font-weight: 300; color: var(--text-secondary); line-height: 1.65; max-width: 580px; margin: 0 auto 56px; letter-spacing: -0.2px; }
 
-    /* SERVICES */
     .tile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .tile { background: var(--gray1); border-radius: 20px; padding: 40px 36px; text-align: left; transition: background 0.2s; min-height: 240px; display: flex; flex-direction: column; justify-content: flex-end; }
     .tile:hover { background: #ebebf0; }
@@ -90,7 +86,6 @@
     .tile-cta::after { content: ' ›'; }
     .tile-cta:hover { color: var(--blue-hover); }
 
-    /* ISO */
     .iso-section { background: linear-gradient(160deg, #e8f0fe 0%, #dbeafe 50%, #ede9fe 100%); padding: 80px 24px; }
     .iso-inner { max-width: 1080px; margin: 0 auto; }
     .iso-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
@@ -101,7 +96,6 @@
     .iso-badge { display: inline-block; background: rgba(0,113,227,0.1); color: var(--blue); font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 980px; margin-bottom: 14px; }
     .iso-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
 
-    /* WHY */
     .why-section { background: var(--white); padding: 80px 24px; border-top: 1px solid var(--gray2); }
     .why-inner { max-width: 1080px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
     .why-features { display: flex; flex-direction: column; gap: 32px; margin-top: 40px; }
@@ -110,7 +104,6 @@
     .why-item-title { font-size: 16px; font-weight: 600; color: var(--black); letter-spacing: -0.3px; margin-bottom: 4px; }
     .why-item-desc { font-size: 14px; color: var(--text-secondary); line-height: 1.65; }
 
-    /* DASHBOARD */
     .dashboard-panel { background: var(--gray1); border-radius: 20px; padding: 28px; }
     .dp-header { display: flex; align-items: center; gap: 6px; margin-bottom: 22px; }
     .dp-dot { width: 12px; height: 12px; border-radius: 50%; }
@@ -129,7 +122,6 @@
     .dp-cert-label { font-size: 12px; color: var(--text-tertiary); text-align: right; }
     .dp-cert-val { font-size: 15px; font-weight: 600; color: var(--blue); text-align: right; margin-top: 4px; }
 
-    /* CONTACT */
     .contact-section { background: var(--gray1); padding: 80px 24px; text-align: center; border-top: 1px solid var(--gray2); }
     .contact-inner { max-width: 560px; margin: 0 auto; }
     .contact-card { background: var(--white); border-radius: 20px; padding: 40px; text-align: left; box-shadow: 0 4px 24px rgba(0,0,0,0.06); }
@@ -140,7 +132,6 @@
     .contact-submit { width: 100%; background: var(--blue); color: #fff; padding: 14px; border-radius: 980px; font-size: 17px; font-weight: 400; border: none; cursor: pointer; font-family: 'Inter', sans-serif; margin-top: 4px; transition: background 0.15s; }
     .contact-submit:hover { background: var(--blue-hover); }
 
-    /* FOOTER */
     footer { background: var(--gray1); border-top: 1px solid var(--gray2); padding: 20px 24px; }
     .footer-top { max-width: 1080px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding-bottom: 16px; border-bottom: 1px solid var(--gray2); }
     .footer-logo { font-size: 18px; font-weight: 700; letter-spacing: -0.6px; color: var(--black); }
@@ -162,7 +153,6 @@
 </head>
 <body>
 
-<!-- NAV -->
 <nav>
   <a class="nav-logo" href="#">quali<span class="q-accent">xx</span></a>
   <ul class="nav-links">
@@ -173,10 +163,9 @@
   </ul>
 </nav>
 
-<!-- HERO -->
 <div class="hero">
   <div class="hero-eyebrow">AI-Powered QMS Platform</div>
-  <h1>qualixx</h1>
+  <h1>quali<span class="q-accent">xx</span></h1>
   <p class="hero-sub">품질경영시스템, 지금보다 쉽고 빠르게.<br>전문 지식 없이도 ISO 표준을 충족하는 지능형 시스템.</p>
   <div class="hero-cta-row">
     <a href="#contact" class="cta-pill">문의하기</a>
@@ -184,7 +173,6 @@
   </div>
 </div>
 
-<!-- STATS -->
 <div class="stats-row">
   <div class="stat-item"><div class="stat-num">4<sup>+</sup></div><div class="stat-label">지원 ISO 표준</div></div>
   <div class="stat-item"><div class="stat-num">80<sup>%</sup></div><div class="stat-label">구축 시간 절감</div></div>
@@ -192,7 +180,6 @@
   <div class="stat-item"><div class="stat-num">24<sup>/7</sup></div><div class="stat-label">실시간 모니터링</div></div>
 </div>
 
-<!-- SERVICES -->
 <div class="section section-center" id="services">
   <div class="section-eyebrow">Core Services</div>
   <h2 class="section-title">모든 규모의 기업을 위한<br>QMS 솔루션</h2>
@@ -205,7 +192,6 @@
   </div>
 </div>
 
-<!-- ISO STANDARDS -->
 <div class="iso-section" id="standards">
   <div class="iso-inner">
     <div style="text-align:center; margin-bottom:48px;">
@@ -222,7 +208,6 @@
   </div>
 </div>
 
-<!-- WHY QUALIXX -->
 <div class="why-section" id="why">
   <div class="why-inner">
     <div>
@@ -258,7 +243,6 @@
   </div>
 </div>
 
-<!-- CONTACT -->
 <div class="contact-section" id="contact">
   <div class="contact-inner">
     <div class="section-eyebrow">Contact Us</div>
@@ -275,7 +259,6 @@
   </div>
 </div>
 
-<!-- FOOTER -->
 <footer>
   <div class="footer-top">
     <div class="footer-logo">quali<span class="q-accent">xx</span></div>
