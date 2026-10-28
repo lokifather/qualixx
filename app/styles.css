@@ -645,3 +645,34 @@ ul.plain li { padding: 8px 10px; background: var(--surface-2); border: 1px solid
 :lang(ko) body, :lang(ja) body, :lang(zh-Hans) body { word-break: keep-all; overflow-wrap: anywhere; }
 @media (max-width: 820px) { .lang-grid { grid-template-columns: 1fr 1fr; } }
 :lang(ko) .kr-sub, :lang(ko) .ps-doc h3 small, :lang(ko) .ps-doc h1 small { display: none; }
+
+/* ================= Theme: Blue & Gray (v0.7.1) — overrides the earlier theme ================= */
+:root {
+  --bg: #f1f3f6;
+  --surface: #ffffff;
+  --surface-2: #f6f7f9;
+  --line: #e2e6ec;
+  --line-strong: #cfd5de;
+  --ink: #1f2733;
+  --ink-2: #475262;
+  --muted: #6b7584;
+  --accent: #1d3f8f;        /* deep blue */
+  --accent-2: #2a55b8;
+  --accent-soft: #e7eefb;   /* light blue */
+  --mint: #3b82f6;          /* highlight blue (variable name kept) */
+  --mint-deep: #2563c9;
+  --grid-dot: #d3d9e2;
+}
+.btn.primary { box-shadow: 0 1px 0 rgba(255, 255, 255, .15) inset, 0 2px 6px rgba(29, 63, 143, .28); }
+.logo { background: var(--accent); color: #fff; }
+.minibars i.hi { border-color: var(--mint-deep); background: linear-gradient(180deg, #d6e4fb, #fff); }
+.minibars i { background: linear-gradient(180deg, #e8edf3, #f6f8fa); }
+.t-design, .t-manual { border-color: #c6d5f2; }
+.org-logo { background: linear-gradient(135deg, var(--accent), #3d63c4); color: #fff; }
+.process.live .process-ic, .file-icon { color: #fff; }
+.steps a.on .num, .dc-steps li.cur span { color: #fff; }
+.lang-card.on .lc-check { color: #fff; }
+.s-InReview, .s-Approval, .r-Submitted { border-color: #c6d5f2; }
+.k-Training { background: #eef0f4; color: #475262; }
+.dc-change { border-left-color: var(--mint); }
+.nav-item.on::before { background: var(--mint); }
