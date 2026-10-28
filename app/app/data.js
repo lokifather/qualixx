@@ -135,5 +135,32 @@ window.QX = (function () {
     };
   }
 
-  return { DEMO_USERS, SEVERITY, PROBABILITY, CONTROL_TYPES, LIBRARY, CHAR_QUESTIONS, defaultAccept, sampleProduct };
+  // Label of the Qualixx software itself (shown in "About Qualixx", sidebar and sign-in page)
+  const APP = {
+    product: 'Qualixx eQMS',
+    version: '0.7.0',
+    build: '20261028.1',
+    releaseDate: '2026-10-28',
+    channel: 'Demo',
+    manufacturer: 'Qualixx Inc. (주식회사 퀄릭스, in incorporation)',
+    address: 'Republic of Korea (address to be confirmed after incorporation)',
+    website: 'https://qualixx.ai',
+    support: 'support@qualixx.ai',
+    intendedUse: 'Cloud software that helps medical device manufacturers establish, operate and keep records of a quality management system (ISO 13485, KGMP, US QMSR) and ISO 14971 risk management.',
+    notMedicalDevice: 'Qualixx is quality management system software. It is not a medical device and does not process patient data.',
+    validation: 'Customers validate Qualixx for its intended use under ISO 13485 §4.1.6. A validation package (requirements, risk assessment, test records) is provided per release.',
+    standards: ['ISO 13485:2016', 'ISO 14971:2019', 'KGMP', '21 CFR 820 (QMSR)', '21 CFR Part 11 (design basis)'],
+    releases: [
+      { version: '0.7.0', date: '2026-10-28', notes: 'Settings with display language: English, Korean, Japanese and Chinese (Simplified). Dates follow the language. Language switch on the sign-in page.' },
+      { version: '0.6.0', date: '2026-10-27', notes: 'Document Control (PDC): start revision, review, approve with e-signature, effective date, read & acknowledge, obsolete, new documents, change comparison and audit trail. My Tasks: all work assigned to you. Quality Policy (e-signed revisions) and Quality Objectives (KPI, target, progress). Product standard (제품표준서) per product with e-signed approval. Sidebar sections for Products (market authorizations by country, product standards, labels & UDI, risk files) and Quality Documents (manual, procedures, forms, in change, obsolete).' },
+      { version: '0.5.0', date: '2026-10-27', notes: 'All 26 processes in Work Process: My Processes (pin), collapsible process groups, process workspaces, quick search (Ctrl+K).' },
+      { version: '0.4.1', date: '2026-10-27', notes: 'Mint chocolate colour theme and new logo colours.' },
+      { version: '0.4.0', date: '2026-10-27', notes: 'Products with label information and software version; My Dashboard; About Qualixx (this label).' },
+      { version: '0.3.0', date: '2026-10-26', notes: 'Quality Documents, Process Map, People and Messages; organization branding.' },
+      { version: '0.2.0', date: '2026-10-26', notes: 'English UI, new dashboard design, Work Process navigation.' },
+      { version: '0.1.0', date: '2026-10-26', notes: 'Risk Management (ISO 14971) workflow: plan, analysis, control, review, e-signature, report, audit trail.' }
+    ]
+  };
+
+  return { APP, DEMO_USERS, SEVERITY, PROBABILITY, CONTROL_TYPES, LIBRARY, CHAR_QUESTIONS, defaultAccept, sampleProduct };
 })();
