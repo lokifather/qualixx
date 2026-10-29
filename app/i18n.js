@@ -1207,9 +1207,9 @@ window.QX_I18N = (function () {
   "生命周期阶段"
  ],
  "Linked": [
-  "연결 문서",
-  "関連",
-  "关联"
+  "연결됨",
+  "連携",
+  "已关联"
  ],
  "Live": [
   "실시간",
@@ -3500,6 +3500,751 @@ window.QX_I18N = (function () {
   "검증 근거(문서번호)",
   "検証の根拠(文書番号)",
   "验证证据(文件编号)"
+ ],
+ "AI development and data management plan": [
+  "AI 개발 및 데이터 관리 계획",
+  "AI 開発・データ管理計画",
+  "AI 开发和数据管理计划"
+ ],
+ "AI model performance evaluation": [
+  "AI 모델 성능 평가",
+  "AI モデル性能評価",
+  "AI 模型性能评价"
+ ],
+ "Actions": [
+  "조치 사항",
+  "アクション",
+  "措施"
+ ],
+ "Add design review": [
+  "설계 검토 추가",
+  "設計レビューを追加",
+  "添加设计评审"
+ ],
+ "Add review": [
+  "검토 추가",
+  "レビューを追加",
+  "添加评审"
+ ],
+ "Add row": [
+  "행 추가",
+  "行を追加",
+  "添加行"
+ ],
+ "Add traceability row": [
+  "추적성 행 추가",
+  "トレーサビリティ行を追加",
+  "添加追溯行"
+ ],
+ "All versions": [
+  "전체 버전",
+  "すべてのバージョン",
+  "全部版本"
+ ],
+ "Annex II 1 — Device description and specification": [
+  "부속서 II 1 — 기기 설명 및 사양",
+  "附属書 II 1 — 機器の説明と仕様",
+  "附录 II 1 — 器械描述与规格"
+ ],
+ "Annex II 2 — Information supplied by the manufacturer": [
+  "부속서 II 2 — 제조자 제공 정보",
+  "附属書 II 2 — 製造業者が提供する情報",
+  "附录 II 2 — 制造商提供的信息"
+ ],
+ "Annex II 3 — Design and manufacturing information": [
+  "부속서 II 3 — 설계 및 제조 정보",
+  "附属書 II 3 — 設計・製造情報",
+  "附录 II 3 — 设计和制造信息"
+ ],
+ "Annex II 4 — General safety and performance requirements": [
+  "부속서 II 4 — 일반 안전 및 성능 요구사항",
+  "附属書 II 4 — 一般安全性能要求事項",
+  "附录 II 4 — 通用安全和性能要求"
+ ],
+ "Annex II 5 — Benefit-risk analysis and risk management": [
+  "부속서 II 5 — 이익-위험 분석 및 위험관리",
+  "附属書 II 5 — ベネフィット・リスク分析とリスクマネジメント",
+  "附录 II 5 — 受益-风险分析和风险管理"
+ ],
+ "Annex II 6.1 — Pre-clinical and clinical data": [
+  "부속서 II 6.1 — 비임상 및 임상 자료",
+  "附属書 II 6.1 — 非臨床・臨床データ",
+  "附录 II 6.1 — 临床前和临床数据"
+ ],
+ "Annex II 6.2 — Additional information: software": [
+  "부속서 II 6.2 — 추가 정보: 소프트웨어",
+  "附属書 II 6.2 — 追加情報:ソフトウェア",
+  "附录 II 6.2 — 补充信息:软件"
+ ],
+ "Annex III — Post-market surveillance": [
+  "부속서 III — 시판 후 감시",
+  "附属書 III — 市販後監視",
+  "附录 III — 上市后监督"
+ ],
+ "Applicable standards and regulatory requirements": [
+  "적용 표준 및 규제 요구사항",
+  "適用規格と規制要求事項",
+  "适用标准和法规要求"
+ ],
+ "Approval / certificate no.": [
+  "허가 / 인증서 번호",
+  "承認 / 認証書番号",
+  "批准 / 证书编号"
+ ],
+ "Approval date": [
+  "허가일",
+  "承認日",
+  "批准日期"
+ ],
+ "Approval no.": [
+  "허가번호",
+  "承認番号",
+  "批准编号"
+ ],
+ "Approve gate": [
+  "게이트 승인",
+  "ゲートを承認",
+  "批准阶段关口"
+ ],
+ "Approved with actions": [
+  "조건부 승인",
+  "条件付き承認",
+  "有条件批准"
+ ],
+ "Authorization record": [
+  "허가 기록",
+  "承認・認証の記録",
+  "注册记录"
+ ],
+ "Baseline frozen": [
+  "베이스라인을 동결했습니다",
+  "ベースラインを凍結しました",
+  "基线已冻结"
+ ],
+ "Baselines": [
+  "베이스라인",
+  "ベースライン",
+  "基线"
+ ],
+ "Biocompatibility": [
+  "생물학적 안전성",
+  "生物学的安全性",
+  "生物相容性"
+ ],
+ "Clinical evaluation / clinical performance": [
+  "임상 평가 / 임상 성능",
+  "臨床評価 / 臨床性能",
+  "临床评价 / 临床性能"
+ ],
+ "Closed": [
+  "종결",
+  "完了",
+  "已关闭"
+ ],
+ "Code": [
+  "코드",
+  "コード",
+  "代码"
+ ],
+ "Create a new authorization record": [
+  "새 허가 기록 만들기",
+  "新しい承認・認証記録を作成",
+  "新建注册记录"
+ ],
+ "Cybersecurity testing": [
+  "사이버보안 시험",
+  "サイバーセキュリティ試験",
+  "网络安全测试"
+ ],
+ "Dataset specification": [
+  "데이터셋 명세",
+  "データセット仕様",
+  "数据集规范"
+ ],
+ "Date": [
+  "날짜",
+  "日付",
+  "日期"
+ ],
+ "Deliverable": [
+  "산출물",
+  "成果物",
+  "交付物"
+ ],
+ "Design and development file (ISO 13485 §7.3.10) — all design records for this product, connected and traceable.": [
+  "설계 및 개발 파일(ISO 13485 §7.3.10) — 이 제품의 모든 설계 기록을 서로 연결해 추적할 수 있게 보관합니다.",
+  "設計・開発ファイル(ISO 13485 §7.3.10)— この製品のすべての設計記録を相互に紐付け、追跡できるように保管します。",
+  "设计和开发文档(ISO 13485 §7.3.10)— 本产品的所有设计记录相互关联、可追溯。"
+ ],
+ "Design and development plan": [
+  "설계 및 개발 계획",
+  "設計・開発計画",
+  "设计和开发计划"
+ ],
+ "Design and development": [
+  "설계 및 개발",
+  "設計・開発",
+  "设计和开发"
+ ],
+ "Design baseline": [
+  "설계 베이스라인",
+  "設計ベースライン",
+  "设计基线"
+ ],
+ "Design changes": [
+  "설계 변경",
+  "設計変更",
+  "设计变更"
+ ],
+ "Design file": [
+  "설계 파일",
+  "設計ファイル",
+  "设计文档"
+ ],
+ "Design input": [
+  "설계 입력",
+  "設計インプット",
+  "设计输入"
+ ],
+ "Design inputs": [
+  "설계 입력",
+  "設計インプット",
+  "设计输入"
+ ],
+ "Design output": [
+  "설계 출력",
+  "設計アウトプット",
+  "设计输出"
+ ],
+ "Design outputs": [
+  "설계 출력",
+  "設計アウトプット",
+  "设计输出"
+ ],
+ "Design review": [
+  "설계 검토",
+  "設計レビュー",
+  "设计评审"
+ ],
+ "Design review records": [
+  "설계 검토 기록",
+  "設計レビュー記録",
+  "设计评审记录"
+ ],
+ "Design reviews": [
+  "설계 검토",
+  "設計レビュー",
+  "设计评审"
+ ],
+ "Design transfer": [
+  "설계 이전",
+  "設計移管",
+  "设计转换"
+ ],
+ "Design transfer checklist": [
+  "설계 이전 체크리스트",
+  "設計移管チェックリスト",
+  "设计转换检查单"
+ ],
+ "Design verification plan and reports": [
+  "설계 검증 계획 및 보고서",
+  "設計検証計画・報告書",
+  "设计验证计划和报告"
+ ],
+ "Device description": [
+  "기기 설명",
+  "機器の説明",
+  "器械描述"
+ ],
+ "Draft generated": [
+  "초안을 생성했습니다",
+  "草案を作成しました",
+  "草稿已生成"
+ ],
+ "Draft refreshed": [
+  "초안을 갱신했습니다",
+  "草案を更新しました",
+  "草稿已更新"
+ ],
+ "Drafts are written automatically from the design file, product standard, label and risk management file. After approval the final version is locked and kept with the authorization.": [
+  "초안은 설계 파일, 제품표준서, 라벨, 위험관리 파일을 바탕으로 자동 작성됩니다. 허가를 받으면 최종본이 잠기고 해당 허가 기록과 함께 보관됩니다.",
+  "草案は設計ファイル、製品標準書、ラベル、リスクマネジメントファイルから自動作成されます。承認後は最終版がロックされ、承認・認証記録とともに保管されます。",
+  "草稿根据设计文档、产品标准、标签和风险管理文档自动编写。获批后,最终版本将被锁定并与注册记录一起保存。"
+ ],
+ "Drawings and bill of materials": [
+  "도면 및 자재 명세서",
+  "図面と部品表",
+  "图纸和物料清单"
+ ],
+ "EU MDR technical documentation (Annex II and III)": [
+  "EU MDR 기술문서 (부속서 II, III)",
+  "EU MDR 技術文書(附属書 II・III)",
+  "EU MDR 技术文档(附录 II 和 III)"
+ ],
+ "Edit traceability row": [
+  "추적성 행 편집",
+  "トレーサビリティ行を編集",
+  "编辑追溯行"
+ ],
+ "Edited": [
+  "수정됨",
+  "編集済み",
+  "已编辑"
+ ],
+ "Edited sections are kept when the draft is refreshed from the design file.": [
+  "설계 파일로 초안을 갱신해도 직접 수정한 항목은 유지됩니다.",
+  "設計ファイルから草案を更新しても、編集した項目は保持されます。",
+  "从设计文档更新草稿时,已编辑的章节会保留。"
+ ],
+ "Electrical safety": [
+  "전기적 안전",
+  "電気的安全性",
+  "电气安全"
+ ],
+ "Electrical safety and EMC": [
+  "전기적 안전 및 전자파 적합성",
+  "電気的安全性と EMC",
+  "电气安全和电磁兼容"
+ ],
+ "Electromagnetic compatibility": [
+  "전자파 적합성",
+  "電磁両立性",
+  "电磁兼容"
+ ],
+ "FDA 510(k) premarket notification": [
+  "FDA 510(k) 시판 전 신고",
+  "FDA 510(k) 市販前届出",
+  "FDA 510(k) 上市前通告"
+ ],
+ "Final": [
+  "최종본",
+  "最終版",
+  "最终版"
+ ],
+ "Freeze baseline": [
+  "베이스라인 동결",
+  "ベースラインを凍結",
+  "冻结基线"
+ ],
+ "Freeze design file baseline": [
+  "설계 파일 베이스라인 동결",
+  "設計ファイルのベースラインを凍結",
+  "冻结设计文档基线"
+ ],
+ "Gate approved": [
+  "게이트 승인됨",
+  "ゲート承認済み",
+  "关口已批准"
+ ],
+ "Gate open": [
+  "게이트 진행 중",
+  "ゲート未承認",
+  "关口未关闭"
+ ],
+ "Gate reopened — deliverable no longer approved": [
+  "산출물 승인이 해제되어 게이트가 다시 열렸습니다",
+  "成果物の承認が外れたため、ゲートを再開しました",
+  "交付物不再处于批准状态,关口已重新打开"
+ ],
+ "Generate draft": [
+  "초안 생성",
+  "草案を作成",
+  "生成草稿"
+ ],
+ "History": [
+  "이력",
+  "履歴",
+  "历史记录"
+ ],
+ "Impact": [
+  "영향",
+  "影響",
+  "影响"
+ ],
+ "Independent reviewer": [
+  "독립 검토자",
+  "独立したレビュー担当者",
+  "独立评审人"
+ ],
+ "Indications for use": [
+  "적응증(사용목적)",
+  "適応(使用目的)",
+  "适应症(预期用途)"
+ ],
+ "Labeling": [
+  "표시기재",
+  "表示",
+  "标签"
+ ],
+ "Labelling and instructions for use": [
+  "표시기재 및 사용설명서",
+  "表示と取扱説明書",
+  "标签和使用说明书"
+ ],
+ "Mark as submitted": [
+  "제출 처리",
+  "申請済みにする",
+  "标记为已提交"
+ ],
+ "Marked as submitted": [
+  "제출 상태로 변경했습니다",
+  "申請済みにしました",
+  "已标记为已提交"
+ ],
+ "Missing": [
+  "누락",
+  "不足",
+  "缺失"
+ ],
+ "Needs evidence": [
+  "근거 필요",
+  "根拠が必要",
+  "需要证据"
+ ],
+ "No content yet — add it in the design file or edit this section.": [
+  "아직 내용이 없습니다 — 설계 파일에서 추가하거나 이 항목을 직접 편집하세요.",
+  "まだ内容がありません — 設計ファイルで追加するか、この項目を編集してください。",
+  "暂无内容 — 请在设计文档中补充或直接编辑本节。"
+ ],
+ "No design changes recorded.": [
+  "기록된 설계 변경이 없습니다.",
+  "設計変更の記録はありません。",
+  "没有设计变更记录。"
+ ],
+ "No design reviews yet.": [
+  "아직 설계 검토가 없습니다.",
+  "設計レビューはまだありません。",
+  "暂无设计评审。"
+ ],
+ "No rows yet.": [
+  "아직 행이 없습니다.",
+  "行はまだありません。",
+  "暂无行。"
+ ],
+ "No technical documentation yet. Generate a draft for a market above.": [
+  "아직 기술문서가 없습니다. 위에서 국가를 골라 초안을 생성하세요.",
+  "技術文書はまだありません。上で国・地域を選んで草案を作成してください。",
+  "暂无技术文档。请在上方选择市场生成草稿。"
+ ],
+ "No technical documentation yet. Open a product and generate a draft.": [
+  "아직 기술문서가 없습니다. 제품을 열고 초안을 생성하세요.",
+  "技術文書はまだありません。製品を開いて草案を作成してください。",
+  "暂无技术文档。请打开产品并生成草稿。"
+ ],
+ "Not approved": [
+  "승인 안 됨",
+  "不承認",
+  "未批准"
+ ],
+ "Not started": [
+  "시작 전",
+  "未着手",
+  "未开始"
+ ],
+ "Notified Body (CE)": [
+  "인증기관 (CE)",
+  "ノーティファイドボディ(CE)",
+  "公告机构(CE)"
+ ],
+ "Participants": [
+  "참석자",
+  "参加者",
+  "参会人员"
+ ],
+ "Performance testing — bench": [
+  "성능 시험 — 벤치",
+  "性能試験 — ベンチ",
+  "性能测试 — 台架"
+ ],
+ "Performance testing — clinical": [
+  "성능 시험 — 임상",
+  "性能試験 — 臨床",
+  "性能测试 — 临床"
+ ],
+ "Phase": [
+  "단계",
+  "フェーズ",
+  "阶段"
+ ],
+ "Planning": [
+  "계획",
+  "計画",
+  "策划"
+ ],
+ "Product standard (design output)": [
+  "제품표준서 (설계 출력)",
+  "製品標準書(設計アウトプット)",
+  "产品标准(设计输出)"
+ ],
+ "Ready": [
+  "준비 완료",
+  "準備完了",
+  "已就绪"
+ ],
+ "Record approval": [
+  "허가 결과 기록",
+  "承認結果を記録",
+  "记录批准结果"
+ ],
+ "Reference": [
+  "근거",
+  "根拠",
+  "依据"
+ ],
+ "Refresh from design file": [
+  "설계 파일로 갱신",
+  "設計ファイルから更新",
+  "从设计文档更新"
+ ],
+ "Regulatory impact": [
+  "인허가 영향",
+  "薬事上の影響",
+  "注册影响"
+ ],
+ "Released version": [
+  "출시 버전",
+  "リリース版",
+  "发布版本"
+ ],
+ "Risk": [
+  "위험",
+  "リスク",
+  "风险"
+ ],
+ "Risk control (hazard)": [
+  "위험통제 (위해요인)",
+  "リスクコントロール(ハザード)",
+  "风险控制(危险源)"
+ ],
+ "Risk control verification": [
+  "위험통제 검증",
+  "リスクコントロールの検証",
+  "风险控制验证"
+ ],
+ "Risk management summary": [
+  "위험관리 요약",
+  "リスクマネジメントの要約",
+  "风险管理摘要"
+ ],
+ "Row deleted": [
+  "행을 삭제했습니다",
+  "行を削除しました",
+  "行已删除"
+ ],
+ "SOUP list": [
+  "SOUP 목록",
+  "SOUP 一覧",
+  "SOUP 清单"
+ ],
+ "Sign & lock final version": [
+  "서명 후 최종본 잠금",
+  "署名して最終版をロック",
+  "签名并锁定最终版本"
+ ],
+ "Software architecture and detailed design": [
+  "소프트웨어 아키텍처 및 상세 설계",
+  "ソフトウェアアーキテクチャと詳細設計",
+  "软件架构和详细设计"
+ ],
+ "Software development plan": [
+  "소프트웨어 개발 계획",
+  "ソフトウェア開発計画",
+  "软件开发计划"
+ ],
+ "Software documentation": [
+  "소프트웨어 문서",
+  "ソフトウェア文書",
+  "软件文档"
+ ],
+ "Software release record": [
+  "소프트웨어 릴리스 기록",
+  "ソフトウェアリリース記録",
+  "软件发布记录"
+ ],
+ "Software requirements specification": [
+  "소프트웨어 요구사항 명세",
+  "ソフトウェア要求仕様",
+  "软件需求规范"
+ ],
+ "Software system testing": [
+  "소프트웨어 시스템 시험",
+  "ソフトウェアシステム試験",
+  "软件系统测试"
+ ],
+ "Start amendment": [
+  "변경 개정 시작",
+  "変更改訂を開始",
+  "开始变更修订"
+ ],
+ "Sterility and shelf life": [
+  "멸균 및 유효기간",
+  "滅菌と有効期間",
+  "无菌和货架期"
+ ],
+ "Submission date": [
+  "제출일",
+  "申請日",
+  "提交日期"
+ ],
+ "Substantial equivalence comparison": [
+  "실질적 동등성 비교",
+  "実質的同等性の比較",
+  "实质等同比较"
+ ],
+ "Summative usability evaluation": [
+  "총괄 사용적합성 평가",
+  "総括的ユーザビリティ評価",
+  "总结性可用性评价"
+ ],
+ "Superseded by a newer approved version. Kept for reference.": [
+  "더 최신 승인본으로 대체되었습니다. 참고용으로 보관합니다.",
+  "新しい承認版に置き換えられました。参照用に保管しています。",
+  "已被更新的批准版本替代,仅供参考保存。"
+ ],
+ "Technical Docs": [
+  "기술문서",
+  "技術文書",
+  "技术文档"
+ ],
+ "Technical docs": [
+  "기술문서",
+  "技術文書",
+  "技术文档"
+ ],
+ "Technical Documentation": [
+  "기술문서",
+  "技術文書",
+  "技术文档"
+ ],
+ "Technical documentation": [
+  "기술문서",
+  "技術文書",
+  "技术文档"
+ ],
+ "Technical documentation by product and market — drafts generated from the design file, and the final versions approved by each authority.": [
+  "제품·국가별 기술문서입니다 — 설계 파일로 생성한 초안과, 각 규제기관이 승인한 최종본을 관리합니다.",
+  "製品・国別の技術文書です — 設計ファイルから作成した草案と、各規制当局が承認した最終版を管理します。",
+  "按产品和市场管理技术文档 — 包括根据设计文档生成的草稿和各监管机构批准的最终版本。"
+ ],
+ "The final version is locked and linked to the authorization. The design file baseline is recorded with it.": [
+  "최종본은 잠기고 허가 기록에 연결됩니다. 설계 파일 베이스라인도 함께 기록됩니다.",
+  "最終版はロックされ、承認・認証記録に紐付けられます。設計ファイルのベースラインも併せて記録されます。",
+  "最终版本将被锁定并关联到注册记录,同时记录设计文档基线。"
+ ],
+ "Traceability matrix": [
+  "추적성 매트릭스",
+  "トレーサビリティマトリックス",
+  "追溯矩阵"
+ ],
+ "Usability engineering plan": [
+  "사용적합성 엔지니어링 계획",
+  "ユーザビリティエンジニアリング計画",
+  "可用性工程计划"
+ ],
+ "User need": [
+  "사용자 요구",
+  "ユーザーニーズ",
+  "用户需求"
+ ],
+ "User need → design input → design output → verification → validation → risk control.": [
+  "사용자 요구 → 설계 입력 → 설계 출력 → 검증 → 밸리데이션 → 위험통제.",
+  "ユーザーニーズ → 設計インプット → 設計アウトプット → 検証 → バリデーション → リスクコントロール。",
+  "用户需求 → 设计输入 → 设计输出 → 验证 → 确认 → 风险控制。"
+ ],
+ "User needs and design input requirements": [
+  "사용자 요구 및 설계 입력 요구사항",
+  "ユーザーニーズと設計インプット要求事項",
+  "用户需求和设计输入要求"
+ ],
+ "View final": [
+  "최종본 보기",
+  "最終版を表示",
+  "查看最终版"
+ ],
+ "deliverables approved": [
+  "승인된 산출물",
+  "承認済み成果物",
+  "已批准交付物"
+ ],
+ "design baseline": [
+  "설계 베이스라인",
+  "設計ベースライン",
+  "设计基线"
+ ],
+ "drafts": [
+  "초안",
+  "草案",
+  "草稿"
+ ],
+ "e.g. Design output review": [
+  "예: 설계 출력 검토",
+  "例:設計アウトプットのレビュー",
+  "例如:设计输出评审"
+ ],
+ "final (approved) versions": [
+  "최종(허가) 버전",
+  "最終(承認)版",
+  "最终(获批)版本"
+ ],
+ "frozen baseline": [
+  "동결된 베이스라인",
+  "凍結済みベースライン",
+  "已冻结基线"
+ ],
+ "missing": [
+  "누락",
+  "不足",
+  "缺失"
+ ],
+ "need evidence": [
+  "근거 필요",
+  "根拠が必要",
+  "需要证据"
+ ],
+ "phase gates approved": [
+  "승인된 단계 게이트",
+  "承認済みフェーズゲート",
+  "已批准的阶段关口"
+ ],
+ "sections ready": [
+  "준비된 항목",
+  "準備完了の項目",
+  "已就绪章节"
+ ],
+ "traceability gaps": [
+  "추적성 누락",
+  "トレーサビリティの欠落",
+  "追溯缺口"
+ ],
+ "under review": [
+  "심사 중",
+  "審査中",
+  "审核中"
+ ],
+ "markets": [
+  "국가",
+  "国・地域",
+  "市场"
+ ],
+ "§7.3.5 — someone not directly responsible for the stage under review": [
+  "§7.3.5 — 검토 대상 단계에 직접 책임이 없는 사람",
+  "§7.3.5 — レビュー対象の段階に直接責任を持たない人",
+  "§7.3.5 — 不直接负责被评审阶段的人员"
+ ],
+ "All deliverables approved": [
+  "모든 산출물 승인 완료",
+  "すべての成果物が承認済み",
+  "所有交付物已批准"
+ ],
+ "All deliverables of this phase are approved. Signing closes the phase (design review gate).": [
+  "이 단계의 모든 산출물이 승인되었습니다. 서명하면 단계가 종료됩니다(설계 검토 게이트).",
+  "このフェーズのすべての成果物が承認されました。署名するとフェーズが完了します(設計レビューゲート)。",
+  "本阶段所有交付物均已批准。签名后该阶段关闭(设计评审关口)。"
+ ],
+ "MFDS technical documentation (기술문서)": [
+  "식약처 기술문서",
+  "MFDS 技術文書(韓国)",
+  "MFDS 技术文档(韩国)"
  ]
 };
 
@@ -3544,6 +4289,20 @@ window.QX_I18N = (function () {
     [/^Rev\.(\d+) requires every user to confirm they have read and understood the change\.$/, 'Rev.$1은 모든 사용자가 변경 내용을 읽고 이해했음을 확인해야 합니다.', 'Rev.$1 は、すべての利用者が変更内容を読んで理解したことの確認が必要です。', 'Rev.$1 要求所有用户确认已阅读并理解变更内容。'],
     [/^(Rev\.\d+) (.+)$/, '$1 $2', '$1 $2', '$1 $2'],
     [/^Hi (.+)$/, '$1님', '$1 さん', '$1'],
+    [/^(\d+) ready$/, '준비 완료 $1', '準備完了 $1', '已就绪 $1'],
+    [/^(\d+) need evidence$/, '근거 필요 $1', '根拠が必要 $1', '需要证据 $1'],
+    [/^(\d+) missing$/, '누락 $1', '不足 $1', '缺失 $1'],
+    [/^(\d+) rows$/, '$1행', '$1 行', '$1 行'],
+    [/^(\d+) gaps$/, '누락 $1', '欠落 $1', '缺口 $1'],
+    [/^no gaps$/, '누락 없음', '欠落なし', '无缺口'],
+    [/^Open v(.+)$/, 'v$1 열기', 'v$1 を開く', '打开 v$1'],
+    [/^Final v(.+)$/, '최종본 v$1', '最終版 v$1', '最终版 v$1'],
+    [/^Tech doc v(.+)$/, '기술문서 v$1', '技術文書 v$1', '技术文档 v$1'],
+    [/^Approve design gate: (.+)$/, '설계 게이트 승인: $1', '設計ゲートの承認:$1', '批准设计关口:$1'],
+    [/^Participants: (.+)$/, '참석자: $1', '参加者:$1', '参会人员:$1'],
+    [/^Independent reviewer: (.+)$/, '독립 검토자: $1', '独立レビュー担当者:$1', '独立评审人:$1'],
+    [/^Actions: (.+)$/, '조치 사항: $1', 'アクション:$1', '措施:$1'],
+    [/^(.+) review records?$/, '설계 검토 기록 $1건', '設計レビュー記録 $1件', '设计评审记录 $1 份'],
     [/^Owner (.+)$/, '담당 $1', '担当 $1', '负责 $1'],
     [/^Signer: (.+)$/, '서명자: $1', '署名者:$1', '签名人:$1'],
     [/^Meaning: (.+)$/, '서명 의미: $1', '署名の意味:$1', '签名含义:$1'],

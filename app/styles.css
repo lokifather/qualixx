@@ -676,3 +676,21 @@ ul.plain li { padding: 8px 10px; background: var(--surface-2); border: 1px solid
 .k-Training { background: #eef0f4; color: #475262; }
 .dc-change { border-left-color: var(--mint); }
 .nav-item.on::before { background: var(--mint); }
+/* ---------- v0.8 design file and technical documentation ---------- */
+.dhf-phases { list-style: none; display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; padding: 0; margin: 16px 0; }
+.dhf-phases li { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); position: relative; }
+.dhf-phases li strong { font-size: 13px; } .dhf-phases li small { color: var(--muted); font-size: 11.5px; }
+.ph-dot { width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--line-strong); display: grid; place-items: center; font-size: 11px; font-weight: 700; margin-bottom: 4px; }
+.dhf-phases li.done { background: var(--accent-soft); border-color: #c6d5f2; } .dhf-phases li.done .ph-dot { background: var(--accent); border-color: var(--accent); color: #fff; }
+.dhf-phases li.cur { border-color: var(--mint); box-shadow: 0 0 0 2px var(--accent-soft); } .dhf-phases li.cur .ph-dot { border-color: var(--mint); background: var(--mint); }
+.dhf-phase { margin-top: 12px; }
+.table.trace td { font-size: 12.5px; min-width: 120px; }
+.trace-miss { display: inline-block; font-size: 11.5px; font-weight: 700; color: var(--bad); background: var(--bad-soft); border: 1px solid #f4c7c8; border-radius: 6px; padding: 1px 7px; }
+.dhf-list { padding: 4px 18px 16px; }
+.td-card { padding: 18px 20px; display: flex; flex-direction: column; gap: 8px; } .td-card h3 { margin: 4px 0 0; font-size: 15px; } .td-card p { margin: 0; }
+.td-doc .td-sec { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 14px; }
+.td-sec-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; } .td-sec-head h3 { margin: 0; }
+.td-text p { margin: 4px 0; font-size: 13.5px; }
+.td-refs { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 0; }
+@media (max-width: 1100px) { .dhf-phases { grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 600px) { .dhf-phases { grid-template-columns: 1fr 1fr; } }

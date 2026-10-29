@@ -198,6 +198,7 @@
             ['#/products', 'All Products', 'products', catalog().length],
             ['#/products/registrations', 'Authorizations', 'products:registrations', catalog().flatMap(regsOf).filter(renewSoon).length || '', true],
             ['#/products/standards', 'Product Standards', 'products:standards'],
+            ['#/products/techdocs', 'Technical Docs', 'products:techdocs', catalog().flatMap(tdOf).filter((p) => p.status === 'Final').length || ''],
             ['#/products/labels', 'Labels & UDI', 'products:labels'],
             ['#/process/risk', 'Risk Files', 'risk', db.products.length]
           ], active)}
@@ -488,8 +489,8 @@
   function viewProduct2(id, tab) {
     const x = findCatalog(id);
     if (!x) return null;
-    tab = ['label', 'registrations', 'standard'].includes(tab) ? tab : 'info';
-    const tabs = `<nav class="steps" aria-label="Product sections"><a href="#/products/${x.id}" class="${tab === 'info' ? 'on' : ''}">${icon('box')}Product information</a><a href="#/products/${x.id}/label" class="${tab === 'label' ? 'on' : ''}">${icon('doc')}Label</a><a href="#/products/${x.id}/standard" class="${tab === 'standard' ? 'on' : ''}">${icon('doc')}Product standard</a><a href="#/products/${x.id}/registrations" class="${tab === 'registrations' ? 'on' : ''}">${icon('process')}Market authorizations <small>${regsOf(x).length}</small></a></nav>`;
+    tab = ['label', 'registrations', 'standard', 'design', 'techdocs'].includes(tab) ? tab : 'info';
+    const tabs = `<nav class="steps" aria-label="Product sections"><a href="#/products/${x.id}" class="${tab === 'info' ? 'on' : ''}">${icon('box')}Product information</a><a href="#/products/${x.id}/label" class="${tab === 'label' ? 'on' : ''}">${icon('doc')}Label</a><a href="#/products/${x.id}/standard" class="${tab === 'standard' ? 'on' : ''}">${icon('doc')}Product standard</a><a href="#/products/${x.id}/design" class="${tab === 'design' ? 'on' : ''}">${icon('process')}Design file</a><a href="#/products/${x.id}/techdocs" class="${tab === 'techdocs' ? 'on' : ''}">${icon('doc')}Technical docs</a><a href="#/products/${x.id}/registrations" class="${tab === 'registrations' ? 'on' : ''}">${icon('process')}Market authorizations <small>${regsOf(x).length}</small></a></nav>`;
     const rf = riskFilesFor(x);
     const row = (k, v) => `<tr><th>${k}</th><td>${esc(v) || '<span class="muted">—</span>'}</td></tr>`;
     return shell(`
@@ -497,7 +498,7 @@
         '<a href="#/dashboard">My Dashboard</a> / <a href="#/products">Products</a> / ' + esc(x.model || x.name),
         `<button class="btn outline" data-action="edit-catalog" data-id="${x.id}">${icon('edit')}Edit</button><button class="btn primary" data-action="risk-for-product" data-id="${x.id}">${icon('plus')}New risk file</button>`)}
       ${tabs}
-      ${tab === 'standard' ? psTab(x) : tab === 'registrations' ? regTab(x) : tab === 'info' ? `<section class="doc-grid">
+      ${tab === 'design' ? dhfTab(x) : tab === 'techdocs' ? tdTab(x) : tab === 'standard' ? psTab(x) : tab === 'registrations' ? regTab(x) : tab === 'info' ? `<section class="doc-grid">
         <article class="card panel">
           <div class="panel-title"><h2>Product information</h2></div>
           <table class="kv">
@@ -859,6 +860,7 @@
       const ok = checks(p).every((c) => c.ok);
       out.push({ kind: ok ? 'Approve' : 'Draft', action: ok ? 'Approve risk management review' : 'Complete risk management file', item: p.model || p.name, title2: p.name, process: 'Risk Management', href: `#/process/risk/${p.id}/${ok ? 'review' : 'overview'}`, due: '', from: '' });
     });
+    catalog().forEach((x) => dhfStats(x).phases.filter((p) => p.complete && !p.gate).forEach((p) => out.push({ kind: 'Approve', action: `Approve design gate: ${p.name}`, item: x.model || x.name, title2: 'Design file', process: 'Design and development', href: `#/products/${x.id}/design`, due: '', from: 'All deliverables approved' })));
     catalog().forEach((x) => regsOf(x).filter(renewSoon).forEach((r) => out.push({ kind: 'Renew', action: `Renew ${r.market} authorization`, item: `${x.model || x.name} · ${r.authority}`, title2: r.pathway, process: 'Regulatory', href: `#/products/${x.id}/registrations`, due: r.expiry, from: 'Expiry tracking' })));
     return out.sort((a, b) => (a.due || '9999').localeCompare(b.due || '9999'));
   }
@@ -1048,7 +1050,7 @@
         ${withProduct ? `<td><a href="#/products/${r._p.id}/registrations"><strong>${esc(r._p.model || r._p.name)}</strong></a></td>` : ''}
         <td><span class="mk">${esc(r.market)}</span> ${esc(marketOf(r.market).name)}</td>
         <td>${esc(r.authority)}<br><small class="muted">${esc(r.pathway)}</small></td>
-        <td class="mono small">${esc(r.number) || '—'}</td>
+        <td class="mono small">${esc(r.number) || '—'}${(() => { const td = (r._p.techdocs || []).filter((p) => p.regId === r.id && p.status !== 'Superseded').pop(); return td ? `<br><a class="small" href="#/products/${r._p.id}/techdocs/${td.id}">Tech doc v${esc(td.version)}</a>` : ''; })()}</td>
         <td>${regBadge(r.status)}${r.status === 'Submitted' && r.submitted ? `<br><small class="muted">since ${fmt(r.submitted)}</small>` : ''}</td>
         <td><small>${r.approved ? fmt(r.approved) : '—'}</small></td>
         <td>${r.expiry ? `<span class="due ${renewSoon(r) ? 'late' : ''}">${fmt(r.expiry)}${renewSoon(r) ? ' · renew' : ''}</span>` : '<small class="muted">—</small>'}</td>
@@ -1344,6 +1346,353 @@
       <div class="form-actions"><button class="btn outline" type="button" data-action="close-modal">Cancel</button><button class="btn primary" type="submit">Sign &amp; approve</button></div></form>`);
   }
 
+  /* ---------- design and development file (ISO 13485 §7.3, §7.3.10; 21 CFR 820 QMSR) ---------- */
+  const DHF_PHASES = [
+    ['planning', 'Planning', '7.3.2'], ['inputs', 'Design inputs', '7.3.3'], ['outputs', 'Design outputs', '7.3.4'],
+    ['review', 'Design review', '7.3.5'], ['verification', 'Verification', '7.3.6'], ['validation', 'Validation', '7.3.7'], ['transfer', 'Design transfer', '7.3.8']
+  ];
+  // [code, phase, title, reference, condition, link]
+  const DHF_ITEMS = [
+    ['DP-01', 'planning', 'Design and development plan', 'ISO 13485 §7.3.2', ''],
+    ['RM-01', 'planning', 'Risk management plan', 'ISO 14971 §4.4', '', 'risk'],
+    ['SW-01', 'planning', 'Software development plan', 'IEC 62304 §5.1', 'sw'],
+    ['AI-01', 'planning', 'AI development and data management plan', 'AI guidance (MFDS, FDA, EU AI Act)', 'ai'],
+    ['UE-01', 'planning', 'Usability engineering plan', 'IEC 62366-1 §5', ''],
+    ['DI-01', 'inputs', 'User needs and design input requirements', 'ISO 13485 §7.3.3', ''],
+    ['RG-01', 'inputs', 'Applicable standards and regulatory requirements', 'ISO 13485 §7.3.3 c', ''],
+    ['SW-02', 'inputs', 'Software requirements specification', 'IEC 62304 §5.2', 'sw'],
+    ['AI-02', 'inputs', 'Dataset specification', 'AI guidance', 'ai'],
+    ['DO-01', 'outputs', 'Product standard (design output)', 'ISO 13485 §7.3.4', '', 'standard'],
+    ['SW-03', 'outputs', 'Software architecture and detailed design', 'IEC 62304 §5.3–5.4', 'sw'],
+    ['SW-04', 'outputs', 'SOUP list', 'IEC 62304 §5.3.3', 'sw'],
+    ['HW-01', 'outputs', 'Drawings and bill of materials', 'ISO 13485 §7.3.4', 'hw'],
+    ['LB-01', 'outputs', 'Labelling and instructions for use', 'ISO 13485 §7.3.4', '', 'label'],
+    ['DR-01', 'review', 'Design review records', 'ISO 13485 §7.3.5', '', 'reviews'],
+    ['VE-01', 'verification', 'Design verification plan and reports', 'ISO 13485 §7.3.6', ''],
+    ['SW-05', 'verification', 'Software system testing', 'IEC 62304 §5.6–5.7', 'sw'],
+    ['CY-01', 'verification', 'Cybersecurity testing', 'IEC 81001-5-1, FDA guidance', 'sw'],
+    ['AI-03', 'verification', 'AI model performance evaluation', 'AI guidance', 'ai'],
+    ['HW-02', 'verification', 'Electrical safety', 'IEC 60601-1', 'hw'],
+    ['HW-03', 'verification', 'Electromagnetic compatibility', 'IEC 60601-1-2', 'hw'],
+    ['HW-04', 'verification', 'Biocompatibility', 'ISO 10993-1', 'hw'],
+    ['RM-02', 'verification', 'Risk control verification', 'ISO 14971 §7.2', '', 'risk'],
+    ['VA-01', 'validation', 'Clinical evaluation / clinical performance', 'ISO 13485 §7.3.7', ''],
+    ['UE-02', 'validation', 'Summative usability evaluation', 'IEC 62366-1 §5.9', ''],
+    ['RM-03', 'validation', 'Risk management report', 'ISO 14971 §9', '', 'risk'],
+    ['DT-01', 'transfer', 'Design transfer checklist', 'ISO 13485 §7.3.8', ''],
+    ['SW-06', 'transfer', 'Software release record', 'IEC 62304 §5.8', 'sw']
+  ];
+  function dhfProfile(x) {
+    const st = stdOf(x);
+    return { sw: !!x.swClass || /software|SaMD/i.test(x.name + ' ' + (st.description || '')), ai: /\bAI\b|deep|learning|algorithm|model/i.test(x.name + ' ' + x.intendedUse + ' ' + (st.components || '')), hw: !/^not applicable/i.test((st.materials || '').trim()) && !!(st.materials || '').trim() };
+  }
+  const DHF_SEED = {
+    'QX-CXR': { done: ['planning', 'inputs', 'outputs', 'review', 'verification'], draft: ['VA-01', 'UE-02'], gates: ['planning', 'inputs', 'outputs', 'review'] },
+    'QX-ECG': { done: DHF_PHASES.map((p) => p[0]), draft: [], gates: DHF_PHASES.map((p) => p[0]), baseline: '2.0' },
+    'QX-DRS': { done: ['planning'], draft: ['DI-01', 'RG-01', 'SW-02', 'AI-02'], gates: ['planning'] }
+  };
+  function dhfOf(x) {
+    if (!x.dhf) {
+      const pr = dhfProfile(x); const seed = (x.example && DHF_SEED[x.model]) || { done: [], draft: [], gates: [] };
+      const ago = (n) => new Date(Date.now() - n * DAY).toISOString();
+      const items = DHF_ITEMS.filter((r) => !r[4] || pr[r[4]]).map((r, i) => {
+        const st = seed.done.includes(r[1]) && !seed.draft.includes(r[0]) ? 'Approved' : seed.draft.includes(r[0]) ? 'Draft' : 'Not started';
+        return { code: r[0], phase: r[1], title: r[2], ref: r[3], link: r[5] || '', docNo: st !== 'Not started' ? `${r[0]}-${x.model}` : '', rev: st === 'Approved' ? '00' : '', status: st, date: st === 'Approved' ? ago(120 - i * 3) : '' };
+      });
+      const d = { items, gates: {}, reviews: [], trace: [], changes: [], baselines: [] };
+      seed.gates.forEach((g, i) => { d.gates[g] = { by: x.example ? 'MinYong Choi' : '', at: ago(110 - i * 12) }; });
+      if (x.example && x.model === 'QX-CXR') {
+        d.reviews = [
+          { id: uid(), date: ago(100).slice(0, 10), phase: 'inputs', title: 'Design input review', participants: 'Development lead, clinical advisor, QA engineer', independent: 'QA engineer (not involved in the design)', decision: 'Approved with actions', actions: 'Add a requirement for the warning shown in the viewer (DI-01.5).' },
+          { id: uid(), date: ago(30).slice(0, 10), phase: 'verification', title: 'Verification readiness review', participants: 'Development lead, QA engineer, regulatory specialist', independent: 'Regulatory specialist', decision: 'Approved', actions: 'Run the integration test again after the UID check fix (VR-004).' }
+        ];
+        d.trace = [
+          { id: uid(), need: 'UN-01 Readers are alerted to suspected nodules', input: 'DI-01.1 Detect nodules ≥ 5 mm with sensitivity ≥ 90 %', output: 'SRS-12 Detection module, model v3.2', verification: 'VR-001 Clinical performance test', validation: 'VA-01 Reader study', risk: 'H-001' },
+          { id: uid(), need: 'UN-02 Results belong to the right patient', input: 'DI-01.2 Show results only when DICOM UIDs match', output: 'SRS-20 UID check', verification: 'VR-004 Integration test', validation: 'VA-01 Reader study', risk: 'H-003' },
+          { id: uid(), need: 'UN-03 Results cannot be altered', input: 'DI-01.3 Integrity signature on results, TLS 1.2+', output: 'SRS-31 Security module', verification: 'SEC-TR-01 Security test', validation: '', risk: 'H-002' },
+          { id: uid(), need: 'UN-04 Works with the hospital PACS', input: 'DI-01.4 DICOM Storage SCP/SCU', output: 'SRS-05 DICOM gateway', verification: 'DC-01 Conformance test', validation: 'VA-02 Site acceptance test', risk: '' },
+          { id: uid(), need: 'UN-05 Readers understand the limits of the aid', input: 'DI-01.5 Warning in viewer and IFU', output: 'UI-SPEC-12, IFU-3.2', verification: '', validation: 'UE-02 Summative usability test', risk: 'H-001' }
+        ];
+        d.changes = [{ id: uid(), no: 'DCR-001', date: ago(45).slice(0, 10), title: 'Raise detection threshold for nodules under 5 mm', impact: 'Risk H-001 re-estimated; VR-001 repeated', regulatory: 'No new submission needed (minor change, KR)', status: 'Closed' }];
+      }
+      if (x.example && x.model === 'QX-ECG') d.reviews = [{ id: uid(), date: ago(240).slice(0, 10), phase: 'validation', title: 'Final design review before release', participants: 'Development lead, clinical advisor, QA engineer', independent: 'QA engineer', decision: 'Approved', actions: '' }];
+      if (seed.baseline) d.baselines.push({ version: seed.baseline, at: ago(200), by: 'MinYong Choi (e-signature)', note: 'Released version' });
+      x.dhf = d; save();
+    }
+    return x.dhf;
+  }
+  function riskStatusFor(x) {
+    const rf = riskFilesFor(x);
+    if (!rf.length) return { status: 'Not started', docNo: '' };
+    const r = rf[0];
+    return { status: r.review.status === 'Approved' ? 'Approved' : 'Draft', docNo: `RMF-${r.model}`, date: r.review.approvedAt };
+  }
+  function dhfItemState(x, it) {
+    if (it.link === 'risk' && riskFilesFor(x).length) { const r = riskStatusFor(x); return Object.assign({}, it, r, { href: riskFilesFor(x)[0] ? `#/process/risk/${riskFilesFor(x)[0].id}/overview` : '' }); }
+    if (it.link === 'standard') { const s = stdOf(x); return Object.assign({}, it, { status: s.status === 'Approved' ? 'Approved' : 'Draft', docNo: s.docNo, rev: s.rev, date: s.approvedAt, href: `#/products/${x.id}/standard` }); }
+    if (it.link === 'label') return Object.assign({}, it, { status: x.labelRef ? (/draft/i.test(x.labelRef) ? 'Draft' : 'Approved') : 'Not started', docNo: x.labelRef || '', href: `#/products/${x.id}/label` });
+    if (it.link === 'reviews') { const n = dhfOf(x).reviews.length; return Object.assign({}, it, { status: n ? 'Approved' : 'Not started', docNo: n ? `${n} review record${n > 1 ? 's' : ''}` : '' }); }
+    return it;
+  }
+  function dhfStats(x) {
+    const d = dhfOf(x);
+    const items = d.items.map((i) => dhfItemState(x, i));
+    const phases = DHF_PHASES.map(([k, name, cl]) => {
+      const list = items.filter((i) => i.phase === k);
+      const done = list.filter((i) => i.status === 'Approved').length;
+      return { k, name, cl, list, done, total: list.length, complete: done === list.length, gate: d.gates[k] };
+    });
+    const missing = d.trace.reduce((n, r) => n + ['input', 'output', 'verification', 'validation'].filter((f) => !(r[f] || '').trim()).length, 0);
+    return { d, items, phases, done: items.filter((i) => i.status === 'Approved').length, total: items.length, missing };
+  }
+  const itemBadge = (s) => `<span class="status ${s === 'Approved' ? 's-Approved' : s === 'Draft' ? 's-Draft' : 's-Soon'}">${esc(s)}</span>`;
+  function dhfTab(x) {
+    const S = dhfStats(x); const d = S.d;
+    const cur = S.phases.find((p) => !p.gate) || null;
+    const bar = `<ol class="dhf-phases">${S.phases.map((p) => `<li class="${p.gate ? 'done' : p === cur ? 'cur' : ''}"><span class="ph-dot">${p.gate ? '✓' : ''}</span><strong>${esc(p.name)}</strong><small>§${p.cl} · ${p.done}/${p.total}</small></li>`).join('')}</ol>`;
+    const phaseBlocks = S.phases.map((p) => `
+      <section class="card table-card dhf-phase" id="ph-${p.k}">
+        <div class="table-top"><div><h2>${esc(p.name)} <small class="muted">ISO 13485 §${p.cl} · ${p.done}/${p.total}</small></h2></div>
+          <div>${p.gate ? `<span class="status s-Approved">Gate approved</span> <small class="muted">${esc(p.gate.by)} · ${fmt(p.gate.at)}</small>` : p.complete ? `<button class="btn primary sm" data-action="dhf-gate" data-id="${x.id}" data-ph="${p.k}">Approve gate</button>` : '<span class="status s-Soon">Gate open</span>'}</div></div>
+        <div class="table-wrap"><table class="table compact"><thead><tr><th>Code</th><th>Deliverable</th><th>Reference</th><th>Document</th><th>Status</th><th>Date</th><th></th></tr></thead>
+        <tbody>${p.list.map((i) => `<tr><td class="code">${esc(i.code)}</td><td>${i.href ? `<a href="${i.href}">${esc(i.title)}</a>` : esc(i.title)}${i.link ? ' <small class="chip">Linked</small>' : ''}</td><td><small class="muted">${esc(i.ref)}</small></td><td class="mono small">${esc(i.docNo) || '—'}${i.rev ? ` <small>Rev.${esc(i.rev)}</small>` : ''}</td><td>${itemBadge(i.status)}</td><td><small>${i.date ? fmt(i.date) : '—'}</small></td>
+          <td class="actions">${i.link ? '' : `<button class="icon-btn" data-action="dhf-item" data-id="${x.id}" data-code="${esc(i.code)}" aria-label="Update">${icon('edit')}</button>`}</td></tr>`).join('')}</tbody></table></div>
+      </section>`).join('');
+    const cell = (v) => (v || '').trim() ? esc(v) : '<span class="trace-miss">Missing</span>';
+    const trace = `<section class="card table-card">
+        <div class="table-top"><div><h2>Traceability matrix <small class="muted">${d.trace.length} rows · ${S.missing ? `<b class="late-text">${S.missing} gaps</b>` : 'no gaps'}</small></h2><p class="muted small">User need → design input → design output → verification → validation → risk control.</p></div><button class="btn outline sm" data-action="dhf-trace" data-id="${x.id}">${icon('plus')}Add row</button></div>
+        ${d.trace.length ? `<div class="table-wrap"><table class="table compact trace"><thead><tr><th>User need</th><th>Design input</th><th>Design output</th><th>Verification</th><th>Validation</th><th>Risk</th><th></th></tr></thead>
+        <tbody>${d.trace.map((r) => `<tr><td>${cell(r.need)}</td><td>${cell(r.input)}</td><td>${cell(r.output)}</td><td>${cell(r.verification)}</td><td>${cell(r.validation)}</td><td>${esc(r.risk) || '—'}</td><td class="actions"><button class="icon-btn" data-action="dhf-trace" data-id="${x.id}" data-rid="${r.id}" aria-label="Edit">${icon('edit')}</button></td></tr>`).join('')}</tbody></table></div>` : '<div class="empty"><p class="muted">No rows yet.</p></div>'}
+      </section>`;
+    const reviews = `<section class="card table-card">
+        <div class="table-top"><div><h2>Design reviews <small class="muted">ISO 13485 §7.3.5</small></h2></div><button class="btn outline sm" data-action="dhf-review" data-id="${x.id}">${icon('plus')}Add review</button></div>
+        ${d.reviews.length ? `<ul class="plain dhf-list">${d.reviews.map((r) => `<li><b>${esc(r.title)}</b> · ${fmt(r.date)} · ${esc((DHF_PHASES.find((p) => p[0] === r.phase) || [])[1] || '')} · <span class="status s-Approved">${esc(r.decision)}</span><br><small>Participants: ${esc(r.participants)} · Independent reviewer: ${esc(r.independent) || '—'}</small>${r.actions ? `<br><small class="muted">Actions: ${esc(r.actions)}</small>` : ''}</li>`).join('')}</ul>` : '<div class="empty"><p class="muted">No design reviews yet.</p></div>'}
+      </section>`;
+    const changes = `<section class="card table-card">
+        <div class="table-top"><div><h2>Design changes <small class="muted">ISO 13485 §7.3.9</small></h2></div></div>
+        ${d.changes.length ? `<div class="table-wrap"><table class="table compact"><thead><tr><th>No.</th><th>Change</th><th>Impact</th><th>Regulatory impact</th><th>Status</th></tr></thead><tbody>${d.changes.map((c) => `<tr><td class="code">${esc(c.no)}</td><td>${esc(c.title)}<br><small class="muted">${fmt(c.date)}</small></td><td><small>${esc(c.impact)}</small></td><td><small>${esc(c.regulatory)}</small></td><td><span class="status s-Approved">${esc(c.status)}</span></td></tr>`).join('')}</tbody></table></div>` : '<div class="empty"><p class="muted">No design changes recorded.</p></div>'}
+      </section>`;
+    const allGates = S.phases.every((p) => p.gate);
+    return `<div class="panel-head no-print"><p class="muted">Design and development file (ISO 13485 §7.3.10) — all design records for this product, connected and traceable.</p>
+        <div class="head-actions"><a class="btn outline sm" href="#/products/${x.id}/techdocs">${icon('doc')}Technical docs</a>${allGates ? `<button class="btn primary sm" data-action="dhf-baseline" data-id="${x.id}">Freeze baseline</button>` : ''}</div></div>
+      <section class="ws-kpis big card panel">
+        <span><strong>${S.done}/${S.total}</strong><small>deliverables approved</small></span>
+        <span><strong>${S.phases.filter((p) => p.gate).length}/${S.phases.length}</strong><small>phase gates approved</small></span>
+        <span><strong class="${S.missing ? 'late-text' : 'ok-text'}">${S.missing}</strong><small>traceability gaps</small></span>
+        <span><strong>${d.baselines.length ? 'v' + esc(d.baselines[d.baselines.length - 1].version) : '—'}</strong><small>frozen baseline</small></span>
+      </section>
+      ${bar}
+      ${trace}
+      ${phaseBlocks}
+      ${reviews}
+      ${changes}
+      ${d.baselines.length ? `<section class="card panel"><div class="panel-title"><h2>Baselines</h2></div><ul class="plain">${d.baselines.map((b) => `<li><b>v${esc(b.version)}</b> · ${fmt(b.at)} · ${esc(b.by)}${b.note ? `<br><small class="muted">${esc(b.note)}</small>` : ''}</li>`).join('')}</ul></section>` : ''}`;
+  }
+  function dhfItemModal(x, code) {
+    const it = dhfOf(x).items.find((i) => i.code === code);
+    openModal(`${it.code} · ${it.title}`, `<form class="form" data-form="dhf-item" data-id="${x.id}" data-code="${esc(code)}">
+      <p class="muted small">${esc(it.ref)}. In the live service this links to a controlled document in Document Control.</p>
+      <div class="grid2">
+        <label>Document no.<input name="docNo" value="${esc(it.docNo)}" placeholder="${esc(it.code)}-${esc(x.model)}"></label>
+        <label>Revision<input name="rev" value="${esc(it.rev)}" placeholder="00"></label>
+        <label>Status<select name="status">${['Not started', 'Draft', 'Approved'].map((s) => `<option value="${s}" ${it.status === s ? 'selected' : ''}>${s}</option>`).join('')}</select></label>
+        <label>Date<input type="date" name="date" value="${esc((it.date || '').slice(0, 10))}"></label>
+      </div>
+      <div class="form-actions"><button class="btn outline" type="button" data-action="close-modal">Cancel</button><button class="btn primary" type="submit">Save</button></div></form>`);
+  }
+  function dhfTraceModal(x, rid) {
+    const r = rid ? dhfOf(x).trace.find((t) => t.id === rid) : null;
+    const f = (k, l, ph) => `<label>${l}<input name="${k}" value="${esc(r ? r[k] : '')}" placeholder="${esc(ph)}"></label>`;
+    openModal(r ? 'Edit traceability row' : 'Add traceability row', `<form class="form" data-form="dhf-trace" data-id="${x.id}" data-rid="${r ? r.id : ''}">
+      ${f('need', 'User need', 'UN-06 …')}${f('input', 'Design input', 'DI-01.6 …')}${f('output', 'Design output', 'SRS-40 …')}${f('verification', 'Verification', 'VR-010 …')}${f('validation', 'Validation', 'VA-01 …')}${f('risk', 'Risk control (hazard)', 'H-005')}
+      <div class="form-actions">${r ? `<button class="btn outline" type="submit" name="op" value="delete">${icon('trash')}Delete</button>` : ''}<button class="btn outline" type="button" data-action="close-modal">Cancel</button><button class="btn primary" type="submit" name="op" value="save">Save</button></div></form>`);
+  }
+  function dhfReviewModal(x) {
+    openModal('Add design review', `<form class="form" data-form="dhf-review" data-id="${x.id}">
+      <div class="grid2"><label>Title<input name="title" required placeholder="e.g. Design output review"></label>
+      <label>Phase<select name="phase">${DHF_PHASES.map((p) => `<option value="${p[0]}">${p[1]}</option>`).join('')}</select></label>
+      <label>Date<input type="date" name="date" value="${todayStr()}"></label>
+      <label>Decision<select name="decision"><option value="Approved">Approved</option><option value="Approved with actions">Approved with actions</option><option value="Not approved">Not approved</option></select></label></div>
+      <label>Participants<input name="participants" required></label>
+      <label>Independent reviewer <small class="hint">§7.3.5 — someone not directly responsible for the stage under review</small><input name="independent"></label>
+      <label>Actions<textarea name="actions" rows="2"></textarea></label>
+      <div class="form-actions"><button class="btn outline" type="button" data-action="close-modal">Cancel</button><button class="btn primary" type="submit">Save</button></div></form>`);
+  }
+  function signModal(title, form, x, extra, ph) {
+    openModal(title, `<form class="form" data-form="${form}" data-id="${x.id}" data-ph="${esc(ph || '')}">${extra || ''}
+      <label>Re-enter password<input name="password" type="password" required autocomplete="current-password"></label>
+      <div class="form-actions"><button class="btn outline" type="button" data-action="close-modal">Cancel</button><button class="btn primary" type="submit">Sign</button></div></form>`);
+  }
+
+  /* ---------- technical documentation per market, generated from the design file ---------- */
+  const TD_TEMPLATES = {
+    KR: { name: 'MFDS technical documentation (기술문서)', authority: 'MFDS', sections: [
+      ['use', '사용목적 (Intended use)', ['DI-01']], ['principle', '작용원리 (Principle of operation)', ['DO-01']], ['structure', '모양 및 구조 (Description and structure)', ['DO-01', 'HW-01']],
+      ['materials', '원재료 (Raw materials)', ['HW-01']], ['manufacturing', '제조방법 (Manufacturing method)', ['DT-01']], ['performance', '성능 (Performance)', ['VE-01', 'AI-03']],
+      ['howto', '사용방법 (Directions for use)', ['LB-01']], ['cautions', '사용 시 주의사항 (Precautions)', ['LB-01']], ['packaging', '포장단위 (Packaging unit)', []],
+      ['storage', '저장방법 및 사용기간 (Storage and shelf life)', []], ['testspec', '시험규격 (Test specifications)', ['VE-01']],
+      ['att_sw', '첨부: 소프트웨어 검증·밸리데이션 자료 (Software V&V)', ['SW-01', 'SW-02', 'SW-05', 'SW-06', 'CY-01'], 'sw'],
+      ['att_elec', '첨부: 전기·기계적 안전 및 전자파 안전 (Electrical safety, EMC)', ['HW-02', 'HW-03'], 'hw'], ['att_bio', '첨부: 생물학적 안전 (Biocompatibility)', ['HW-04'], 'hw'],
+      ['att_clin', '첨부: 임상·성능 평가 자료 (Clinical / performance evaluation)', ['VA-01', 'AI-03']], ['att_risk', '첨부: 위험관리 자료 (Risk management)', ['RM-03']]
+    ] },
+    EU: { name: 'EU MDR technical documentation (Annex II and III)', authority: 'Notified Body (CE)', sections: [
+      ['use', 'Annex II 1 — Device description and specification', ['DI-01', 'DO-01']], ['labels', 'Annex II 2 — Information supplied by the manufacturer', ['LB-01']],
+      ['manufacturing', 'Annex II 3 — Design and manufacturing information', ['DP-01', 'DT-01']], ['gspr', 'Annex II 4 — General safety and performance requirements', ['RG-01']],
+      ['att_risk', 'Annex II 5 — Benefit-risk analysis and risk management', ['RM-03']], ['verification', 'Annex II 6.1 — Pre-clinical and clinical data', ['VE-01', 'SW-05', 'HW-02', 'HW-03', 'HW-04', 'VA-01']],
+      ['att_sw', 'Annex II 6.2 — Additional information: software', ['SW-01', 'SW-02', 'SW-03', 'SW-05', 'CY-01'], 'sw'], ['pms', 'Annex III — Post-market surveillance', []]
+    ] },
+    US: { name: 'FDA 510(k) premarket notification', authority: 'FDA', sections: [
+      ['structure', 'Device description', ['DO-01']], ['use', 'Indications for use', ['DI-01']], ['se', 'Substantial equivalence comparison', []],
+      ['labels', 'Labeling', ['LB-01']], ['att_sw', 'Software documentation', ['SW-01', 'SW-02', 'SW-03', 'SW-04', 'SW-05', 'SW-06'], 'sw'], ['cyber', 'Cybersecurity', ['CY-01'], 'sw'],
+      ['att_elec', 'Electrical safety and EMC', ['HW-02', 'HW-03'], 'hw'], ['att_bio', 'Biocompatibility', ['HW-04'], 'hw'], ['storage', 'Sterility and shelf life', [], 'hw'],
+      ['performance', 'Performance testing — bench', ['VE-01', 'AI-03']], ['att_clin', 'Performance testing — clinical', ['VA-01']], ['att_risk', 'Risk management summary', ['RM-03']]
+    ] }
+  };
+  function tdAuto(x, key, market) {
+    const s = stdOf(x); const pr = dhfProfile(x); const rf = riskFilesFor(x)[0];
+    const specs = s.specs.map((r) => `- ${r[0]}: ${r[1]}${r[2] ? ` (${r[2]})` : ''}`).join('\n');
+    const rsum = rf ? (() => { const st = stats(rf); return `Risk management file ${rf.model} (${rf.review.status}): ${st.hazards} hazards, ${st.initUnacc} initially unacceptable, ${st.ctl} control measures (${st.ctlDone} fully verified), ${st.resUnacc} unacceptable residual risks.${rf.overall.conclusion ? ' Conclusion: ' + rf.overall.conclusion : ''}`; })() : '';
+    const T = {
+      use: [x.intendedUse, x.users ? `Intended users: ${x.users}` : '', x.environment ? `Use environment: ${x.environment}` : ''].filter(Boolean).join('\n'),
+      principle: s.description, structure: [s.description, s.components].filter(Boolean).join('\n\n'),
+      materials: pr.hw ? s.materials : 'Not applicable (software only).', manufacturing: s.process, performance: specs,
+      howto: x.labelRef ? `Follow the instructions for use (${x.labelRef}).` : '', cautions: x.warnings, packaging: s.packaging, storage: s.storage,
+      testspec: s.specs.map((r) => `- ${r[0]}: ${r[1]} — ${r[2] || 'method to be stated'}`).join('\n'),
+      labels: [x.labelRef ? `Label and IFU: ${x.labelRef}` : '', x.warnings ? `Warnings: ${x.warnings}` : '', x.udi ? `UDI-DI: ${x.udi}` : ''].filter(Boolean).join('\n'),
+      gspr: s.specs.length ? `Applied standards and methods:\n${[...new Set(s.specs.map((r) => r[2]).filter(Boolean))].map((m) => '- ' + m).join('\n')}\nThe full GSPR checklist is maintained as RG-01.` : '',
+      att_risk: rsum, verification: specs, att_clin: '', att_sw: pr.sw ? `Software safety class: ${x.swClass || 'to be determined'}.${x.swVersion ? ' Version: ' + x.swVersion + '.' : ''}${s.components ? '\n' + s.components : ''}` : '',
+      cyber: pr.sw ? 'Threat model, security risk assessment, SBOM and penetration test report (CY-01).' : '', att_elec: '', att_bio: '',
+      se: x.predicate ? `Predicate device: ${x.predicate}.\nIntended use, technology and performance are compared side by side; differences do not raise new questions of safety and effectiveness.` : '',
+      pms: x.pmsPlan || (rf && rf.plan.pms ? `PMS plan basis: ${rf.plan.pms}` : '')
+    };
+    if (market === 'US' && key === 'att_sw' && pr.sw && /class c/i.test(x.swClass || '')) T.att_sw += '\nFDA documentation level: Enhanced.';
+    else if (market === 'US' && key === 'att_sw' && pr.sw) T.att_sw += '\nFDA documentation level: Basic (confirm against the FDA software guidance).';
+    return T[key] || '';
+  }
+  function tdBuild(x, market) {
+    const tpl = TD_TEMPLATES[market]; const pr = dhfProfile(x); const S = dhfStats(x);
+    return tpl.sections.filter((r) => !r[3] || pr[r[3]]).map(([key, title, codes]) => {
+      const refs = codes.map((c) => S.items.find((i) => i.code === c)).filter(Boolean).map((i) => ({ code: i.code, title: i.title, docNo: i.docNo, status: i.status }));
+      let text = tdAuto(x, key, market);
+      if (!text && refs.some((r) => r.status !== 'Not started')) text = 'Attached evidence:\n' + refs.map((r) => `- ${r.title}: ${r.docNo || '—'} (${r.status})`).join('\n');
+      const status = !text ? 'Missing' : refs.every((r) => r.status === 'Approved') ? 'Ready' : 'Needs evidence';
+      return { key, title, text, refs, status, edited: false };
+    });
+  }
+  function tdOf(x) {
+    if (!x.techdocs) {
+      x.techdocs = [];
+      if (x.example && x.model === 'QX-ECG') {
+        if (!x.predicate) x.predicate = 'Example single-lead ECG patch recorder (K19EX99, example)';
+        if (!x.pmsPlan) x.pmsPlan = 'PMS plan PMS-QX-ECG: complaint trending, field performance of adhesion and battery life, literature review; PMS report every year (Class IIa).';
+        const regs = regsOf(x);
+        [['KR', 'EX-KR-25-0102'], ['US', 'K25EX01']].forEach(([m, no]) => {
+          const r = regs.find((y) => y.market === m);
+          x.techdocs.push({ id: uid(), market: m, version: '1.0', status: 'Final', createdAt: r ? r.approved : nowISO(), sections: tdBuild(x, m), regId: r ? r.id : '', approvalNo: no, approvedAt: r ? r.approved : '', baseline: '2.0', history: [{ at: r ? r.approved : nowISO(), by: 'MinYong Choi (e-signature)', action: `Approved by ${TD_TEMPLATES[m].authority} (${no}) — locked as final` }] });
+        });
+        const eu = regs.find((y) => y.market === 'EU');
+        x.techdocs.push({ id: uid(), market: 'EU', version: '0.3', status: 'Submitted', createdAt: nowISO(), sections: tdBuild(x, 'EU'), regId: eu ? eu.id : '', approvalNo: '', approvedAt: '', baseline: '2.0', history: [{ at: nowISO(), by: 'MinYong Choi', action: 'Submitted to the notified body' }] });
+      }
+      save();
+    }
+    return x.techdocs;
+  }
+  const tdBadge = (s) => `<span class="status ${s === 'Final' ? 's-Approved' : s === 'Submitted' ? 's-InReview' : s === 'Superseded' ? 's-Superseded' : 's-Draft'}">${esc(s)}</span>`;
+  const secBadge = (s) => `<span class="status ${s === 'Ready' ? 's-Approved' : s === 'Missing' ? 's-Obsolete' : 's-Draft'}">${esc(s)}</span>`;
+  function tdTab(x) {
+    const list = tdOf(x);
+    const cards = Object.keys(TD_TEMPLATES).map((m) => {
+      const tpl = TD_TEMPLATES[m]; const prev = tdBuild(x, m);
+      const n = (s) => prev.filter((p) => p.status === s).length;
+      const pk = list.filter((p) => p.market === m);
+      const fin = pk.find((p) => p.status === 'Final'); const open = pk.find((p) => p.status === 'Draft' || p.status === 'Submitted');
+      return `<article class="card td-card">
+        <div class="obj-top"><span class="mk">${m}</span>${fin ? tdBadge('Final') : open ? tdBadge(open.status) : '<span class="status s-Soon">Not started</span>'}</div>
+        <h3>${esc(tpl.name)}</h3>
+        <div class="obj-bar"><i style="width:${Math.round(n('Ready') / prev.length * 100)}%"></i></div>
+        <p class="obj-meta"><span>${n('Ready')} ready</span><span>${n('Needs evidence')} need evidence</span><span>${n('Missing')} missing</span></p>
+        ${fin ? `<p class="small"><b>Final v${esc(fin.version)}</b> · ${esc(fin.approvalNo)} · ${fmt(fin.approvedAt)}</p>` : ''}
+        <div class="btn-row">${open ? `<a class="btn primary sm" href="#/products/${x.id}/techdocs/${open.id}">Open v${esc(open.version)}</a>` : `<button class="btn primary sm" data-action="td-generate" data-id="${x.id}" data-m="${m}">${fin ? 'Start amendment' : 'Generate draft'}</button>`}${fin ? `<a class="btn outline sm" href="#/products/${x.id}/techdocs/${fin.id}">View final</a>` : ''}</div>
+      </article>`;
+    }).join('');
+    return `<div class="panel-head no-print"><p class="muted">Drafts are written automatically from the design file, product standard, label and risk management file. After approval the final version is locked and kept with the authorization.</p></div>
+      <section class="obj-grid">${cards}</section>
+      <h2 class="section-title">All versions</h2>
+      <section class="card table-card">${list.length ? `<div class="table-wrap"><table class="table"><thead><tr><th>Market</th><th>Version</th><th>Status</th><th>Approval no.</th><th>Approved</th><th>Design baseline</th><th></th></tr></thead>
+        <tbody>${list.slice().reverse().map((p) => `<tr class="clickable" data-href="#/products/${x.id}/techdocs/${p.id}"><td><span class="mk">${p.market}</span> ${esc(TD_TEMPLATES[p.market].authority)}</td><td>v${esc(p.version)}</td><td>${tdBadge(p.status)}</td><td class="mono small">${esc(p.approvalNo) || '—'}</td><td><small>${p.approvedAt ? fmt(p.approvedAt) : '—'}</small></td><td>${p.baseline ? 'v' + esc(p.baseline) : '—'}</td><td class="actions"><a class="btn outline sm" href="#/products/${x.id}/techdocs/${p.id}">Open</a></td></tr>`).join('')}</tbody></table></div>`
+        : '<div class="empty"><p class="muted">No technical documentation yet. Generate a draft for a market above.</p></div>'}</section>`;
+  }
+  function viewTechDoc(x, pid) {
+    const p = tdOf(x).find((y) => y.id === pid); if (!p) return null;
+    const tpl = TD_TEMPLATES[p.market]; const locked = p.status === 'Final' || p.status === 'Superseded';
+    const reg = regsOf(x).find((r) => r.id === p.regId);
+    const n = (s) => p.sections.filter((y) => y.status === s).length;
+    const acts = [
+      `<button class="btn outline" data-action="print">${icon('print')}Print / PDF</button>`,
+      p.status === 'Draft' ? `<button class="btn outline" data-action="td-refresh" data-id="${x.id}" data-p="${p.id}">Refresh from design file</button><button class="btn primary" data-action="td-submit" data-id="${x.id}" data-p="${p.id}">Mark as submitted</button>` : '',
+      p.status === 'Submitted' ? `<button class="btn primary" data-action="td-approve" data-id="${x.id}" data-p="${p.id}">Record approval</button>` : ''
+    ].join('');
+    return shell(`
+      ${pageHead(`${esc(tpl.name)} · v${esc(p.version)}`, `${esc(x.name)} (${esc(x.model)}) · ${tdBadge(p.status)}${reg ? ` · ${esc(reg.market)} ${esc(reg.pathway)}` : ''}`,
+        `<a href="#/dashboard">My Dashboard</a> / <a href="#/products">Products</a> / <a href="#/products/${x.id}/techdocs">${esc(x.model)}</a> / ${esc(p.market)} v${esc(p.version)}`, acts)}
+      ${locked ? `<p class="alert soft no-print">${p.status === 'Final' ? `Final version approved by ${esc(tpl.authority)}${p.approvalNo ? ' (' + esc(p.approvalNo) + ')' : ''} on ${fmt(p.approvedAt)}. Locked — changes need an amendment.` : 'Superseded by a newer approved version. Kept for reference.'}</p>` : ''}
+      <section class="ws-kpis big card panel no-print">
+        <span><strong class="ok-text">${n('Ready')}</strong><small>sections ready</small></span>
+        <span><strong>${n('Needs evidence')}</strong><small>need evidence</small></span>
+        <span><strong class="${n('Missing') ? 'late-text' : ''}">${n('Missing')}</strong><small>missing</small></span>
+        <span><strong>${p.baseline ? 'v' + esc(p.baseline) : '—'}</strong><small>design baseline</small></span>
+      </section>
+      <article class="card panel report td-doc">
+        <header class="report-head"><h1>${esc(tpl.name)}</h1>
+          <table class="kv"><tr><th>Product</th><td>${esc(x.name)} (${esc(x.model)})</td><th>Version</th><td>v${esc(p.version)} ${tdBadge(p.status)}</td></tr>
+          <tr><th>Manufacturer</th><td>${esc(x.manufacturer) || '—'}</td><th>Authority</th><td>${esc(tpl.authority)}${p.approvalNo ? ' · ' + esc(p.approvalNo) : ''}</td></tr></table></header>
+        ${p.sections.map((s, i) => `<section class="td-sec">
+          <div class="td-sec-head"><h3>${i + 1}. ${esc(s.title)}</h3><span>${secBadge(s.status)}${s.edited ? ' <small class="chip">Edited</small>' : ''}${locked ? '' : ` <button class="icon-btn no-print" data-action="td-edit" data-id="${x.id}" data-p="${p.id}" data-k="${s.key}" aria-label="Edit">${icon('edit')}</button>`}</span></div>
+          ${s.text ? `<div class="td-text">${esc(s.text).split('\n').map((l) => `<p>${l}</p>`).join('')}</div>` : '<p class="muted">No content yet — add it in the design file or edit this section.</p>'}
+          ${s.refs.length ? `<p class="td-refs">${s.refs.map((r) => `<span class="chip"><b>${esc(r.code)}</b> ${esc(r.docNo || r.title)} · ${esc(r.status)}</span>`).join(' ')}</p>` : ''}
+        </section>`).join('')}
+      </article>
+      <section class="card panel no-print"><div class="panel-title"><h2>History</h2></div><ul class="plain">${p.history.map((h) => `<li>${fmt(h.at, true)} · ${esc(h.by)}<br><small class="muted">${esc(h.action)}</small></li>`).join('')}</ul></section>`, 'products');
+  }
+  function viewTechDocs() {
+    const rows = catalog().flatMap((x) => tdOf(x).map((p) => ({ x, p })));
+    const fin = rows.filter((r) => r.p.status === 'Final');
+    return shell(`
+      ${pageHead('Technical Documentation', 'Technical documentation by product and market — drafts generated from the design file, and the final versions approved by each authority.', '<a href="#/dashboard">My Dashboard</a> / <a href="#/products">Products</a> / Technical Documentation')}
+      <section class="ws-kpis big card panel">
+        <span><strong>${fin.length}</strong><small>final (approved) versions</small></span>
+        <span><strong>${rows.filter((r) => r.p.status === 'Submitted').length}</strong><small>under review</small></span>
+        <span><strong>${rows.filter((r) => r.p.status === 'Draft').length}</strong><small>drafts</small></span>
+        <span><strong>${new Set(fin.map((r) => r.p.market)).size}</strong><small>markets</small></span>
+      </section>
+      <section class="card table-card">${rows.length ? `<div class="table-wrap"><table class="table"><thead><tr><th>Product</th><th>Market</th><th>Version</th><th>Status</th><th>Approval no.</th><th>Approved</th><th>Design baseline</th></tr></thead>
+        <tbody>${rows.map(({ x, p }) => `<tr class="clickable" data-href="#/products/${x.id}/techdocs/${p.id}"><td><strong>${esc(x.name)}</strong><br><small class="muted">${esc(x.model)}</small></td><td><span class="mk">${p.market}</span> ${esc(TD_TEMPLATES[p.market].authority)}</td><td>v${esc(p.version)}</td><td>${tdBadge(p.status)}</td><td class="mono small">${esc(p.approvalNo) || '—'}</td><td><small>${p.approvedAt ? fmt(p.approvedAt) : '—'}</small></td><td>${p.baseline ? 'v' + esc(p.baseline) : '—'}</td></tr>`).join('')}</tbody></table></div>`
+        : '<div class="empty"><p class="muted">No technical documentation yet. Open a product and generate a draft.</p></div>'}</section>`, 'products:techdocs');
+  }
+  function tdEditModal(x, p, key) {
+    const s = p.sections.find((y) => y.key === key);
+    openModal(`Edit section · ${s.title}`, `<form class="form" data-form="td-edit" data-id="${x.id}" data-p="${p.id}" data-k="${esc(key)}">
+      <p class="muted small">Edited sections are kept when the draft is refreshed from the design file.</p>
+      <label>Content<textarea name="text" rows="12">${esc(s.text)}</textarea></label>
+      <div class="form-actions"><button class="btn outline" type="button" data-action="close-modal">Cancel</button><button class="btn primary" type="submit">Save</button></div></form>`);
+  }
+  function tdSubmitModal(x, p) {
+    const regs = regsOf(x).filter((r) => r.market === p.market);
+    openModal(`Mark as submitted · ${p.market} v${p.version}`, `<form class="form" data-form="td-submit" data-id="${x.id}" data-p="${p.id}">
+      <label>Authorization record<select name="regId">${regs.map((r) => `<option value="${r.id}">${esc(r.market)} · ${esc(r.pathway)} · ${esc(r.status)}</option>`).join('')}<option value="new">Create a new authorization record</option></select></label>
+      <label>Submission date<input type="date" name="date" value="${todayStr()}"></label>
+      <div class="form-actions"><button class="btn outline" type="button" data-action="close-modal">Cancel</button><button class="btn primary" type="submit">Save</button></div></form>`);
+  }
+  function tdApproveModal(x, p) {
+    openModal(`Record approval · ${p.market} v${p.version}`, `<form class="form" data-form="td-approve" data-id="${x.id}" data-p="${p.id}">
+      <p class="muted small">The final version is locked and linked to the authorization. The design file baseline is recorded with it.</p>
+      <div class="grid2"><label>Approval / certificate no.<input name="number" required></label>
+      <label>Approval date<input type="date" name="approved" value="${todayStr()}"></label>
+      <label>Expiry / renewal<input type="date" name="expiry"></label>
+      <label>Re-enter password<input name="password" type="password" required autocomplete="current-password"></label></div>
+      <div class="form-actions"><button class="btn outline" type="button" data-action="close-modal">Cancel</button><button class="btn primary" type="submit">Sign &amp; lock final version</button></div></form>`);
+  }
+
   /* ---------- settings ---------- */
   function viewSettings() {
     const s2 = getSession();
@@ -1376,7 +1725,7 @@
     }
     catalog().forEach((x) => out.push({ kind: 'Product', label: `${x.name} ${x.model}`, sub: x.swVersion ? 'v' + x.swVersion : '', href: `#/products/${x.id}` }));
     db.products.forEach((r) => out.push({ kind: 'Risk file', label: `${r.name} ${r.model}`, sub: r.review.status, href: `#/process/risk/${r.id}/overview` }));
-    [['My Dashboard', '#/dashboard'], ['Quality Policy', '#/quality/policy'], ['Quality Objectives', '#/quality/objectives'], ['My Tasks', '#/tasks'], ['Document Control', '#/process/doc-control'], ['Products', '#/products'], ['Market Authorizations', '#/products/registrations'], ['Product Standards', '#/products/standards'], ['Labels & UDI', '#/products/labels'],  ['Quality Documents', '#/documents'], ['Process Map', '#/process'], ['Risk Management', '#/process/risk'], ['People', '#/people'], ['Messages', '#/messages'], ['Settings', '#/settings'], ['About Qualixx', '#/about']]
+    [['My Dashboard', '#/dashboard'], ['Quality Policy', '#/quality/policy'], ['Quality Objectives', '#/quality/objectives'], ['My Tasks', '#/tasks'], ['Document Control', '#/process/doc-control'], ['Products', '#/products'], ['Market Authorizations', '#/products/registrations'], ['Product Standards', '#/products/standards'], ['Technical Documentation', '#/products/techdocs'], ['Labels & UDI', '#/products/labels'],  ['Quality Documents', '#/documents'], ['Process Map', '#/process'], ['Risk Management', '#/process/risk'], ['People', '#/people'], ['Messages', '#/messages'], ['Settings', '#/settings'], ['About Qualixx', '#/about']]
       .forEach(([l, h]) => out.push({ kind: 'Page', label: l, sub: '', href: h }));
     return out;
   }
@@ -1908,6 +2257,27 @@
     'set-lang': (el) => { I18N.set(el.dataset.l); render(); toast('Language changed'); },
     'new-obj': () => objModal(null),
     'edit-ps': (el) => psModal(findCatalog(el.dataset.id)),
+    'dhf-item': (el) => dhfItemModal(findCatalog(el.dataset.id), el.dataset.code),
+    'dhf-trace': (el) => dhfTraceModal(findCatalog(el.dataset.id), el.dataset.rid),
+    'dhf-review': (el) => dhfReviewModal(findCatalog(el.dataset.id)),
+    'dhf-gate': (el) => { const p = DHF_PHASES.find((y) => y[0] === el.dataset.ph); signModal(`Approve gate · ${p[1]}`, 'dhf-gate', findCatalog(el.dataset.id), `<p class="muted small">All deliverables of this phase are approved. Signing closes the phase (design review gate).</p>`, p[0]); },
+    'dhf-baseline': (el) => { const x = findCatalog(el.dataset.id); signModal('Freeze design file baseline', 'dhf-baseline', x, `<label>Version<input name="version" required value="${esc(x.version || '1.0')}"></label><label>Note<input name="note" placeholder="e.g. Released version for KR submission"></label>`); },
+    'td-generate': (el) => {
+      const x = findCatalog(el.dataset.id); const m = el.dataset.m; const list = tdOf(x);
+      const fin = list.filter((p) => p.market === m && p.status === 'Final').pop();
+      const version = fin ? `${fin.version.split('.')[0]}.${Number(fin.version.split('.')[1] || 0) + 1}` : '0.1';
+      const d = dhfOf(x); const base = d.baselines.length ? d.baselines[d.baselines.length - 1].version : '';
+      const p = { id: uid(), market: m, version, status: 'Draft', createdAt: nowISO(), sections: tdBuild(x, m), regId: '', approvalNo: '', approvedAt: '', baseline: base, amends: fin ? fin.id : '', history: [{ at: nowISO(), by: getSession().name, action: fin ? `Amendment of final v${fin.version} generated from the design file` : 'Draft generated from the design file' }] };
+      list.push(p); save(); toast('Draft generated'); go(`/products/${x.id}/techdocs/${p.id}`);
+    },
+    'td-refresh': (el) => {
+      const x = findCatalog(el.dataset.id); const p = tdOf(x).find((y) => y.id === el.dataset.p);
+      const fresh = tdBuild(x, p.market); p.sections = fresh.map((f) => { const old = p.sections.find((o) => o.key === f.key); return old && old.edited ? Object.assign({}, f, { text: old.text, edited: true }) : f; });
+      p.history.unshift({ at: nowISO(), by: getSession().name, action: 'Refreshed from the design file' }); save(); toast('Draft refreshed'); render();
+    },
+    'td-edit': (el) => { const x = findCatalog(el.dataset.id); tdEditModal(x, tdOf(x).find((y) => y.id === el.dataset.p), el.dataset.k); },
+    'td-submit': (el) => { const x = findCatalog(el.dataset.id); tdSubmitModal(x, tdOf(x).find((y) => y.id === el.dataset.p)); },
+    'td-approve': (el) => { const x = findCatalog(el.dataset.id); tdApproveModal(x, tdOf(x).find((y) => y.id === el.dataset.p)); },
     'approve-ps': (el) => psApproveModal(findCatalog(el.dataset.id)),
     'edit-obj': (el) => objModal(qms().objectives.find((o) => o.id === el.dataset.id)),
     'edit-policy': () => policyModal(),
@@ -2219,6 +2589,57 @@
     });
     closeModal(); toast(`${id} created`); go('/documents/' + encodeURIComponent(id));
   };
+  forms['dhf-item'] = (fd, form) => {
+    const x = findCatalog(form.dataset.id); const it = dhfOf(x).items.find((i) => i.code === form.dataset.code);
+    Object.assign(it, { docNo: String(fd.get('docNo') || '').trim(), rev: String(fd.get('rev') || '').trim(), status: fd.get('status'), date: fd.get('date') || (fd.get('status') === 'Approved' ? todayStr() : '') });
+    const g = dhfOf(x).gates; if (it.status !== 'Approved' && g[it.phase]) { delete g[it.phase]; toast('Gate reopened — deliverable no longer approved'); } else toast('Saved');
+    x.updatedAt = nowISO(); save(); closeModal(); render();
+  };
+  forms['dhf-trace'] = (fd, form, sub) => {
+    const x = findCatalog(form.dataset.id); const d = dhfOf(x); const rid = form.dataset.rid;
+    if (sub && sub.value === 'delete') { d.trace = d.trace.filter((t) => t.id !== rid); save(); closeModal(); toast('Row deleted'); render(); return; }
+    const vals = {}; ['need', 'input', 'output', 'verification', 'validation', 'risk'].forEach((k) => { vals[k] = String(fd.get(k) || '').trim(); });
+    const r = d.trace.find((t) => t.id === rid); if (r) Object.assign(r, vals); else d.trace.push(Object.assign({ id: uid() }, vals));
+    save(); closeModal(); toast('Saved'); render();
+  };
+  forms['dhf-review'] = (fd, form) => {
+    const x = findCatalog(form.dataset.id); const vals = { id: uid() }; ['title', 'phase', 'date', 'decision', 'participants', 'independent', 'actions'].forEach((k) => { vals[k] = String(fd.get(k) || '').trim(); });
+    dhfOf(x).reviews.push(vals); save(); closeModal(); toast('Saved'); render();
+  };
+  forms['dhf-gate'] = (fd, form) => {
+    if (!checkPw(fd.get('password'))) { toast('Incorrect password'); return; }
+    const x = findCatalog(form.dataset.id); dhfOf(x).gates[form.dataset.ph] = { by: `${getSession().name} (e-signature)`, at: nowISO() };
+    save(); closeModal(); toast('Gate approved'); render();
+  };
+  forms['dhf-baseline'] = (fd, form) => {
+    if (!checkPw(fd.get('password'))) { toast('Incorrect password'); return; }
+    const x = findCatalog(form.dataset.id); dhfOf(x).baselines.push({ version: String(fd.get('version')).trim(), at: nowISO(), by: `${getSession().name} (e-signature)`, note: String(fd.get('note') || '').trim() });
+    save(); closeModal(); toast('Baseline frozen'); render();
+  };
+  forms['td-edit'] = (fd, form) => {
+    const x = findCatalog(form.dataset.id); const p = tdOf(x).find((y) => y.id === form.dataset.p); const s2 = p.sections.find((y) => y.key === form.dataset.k);
+    s2.text = String(fd.get('text') || ''); s2.edited = true; if (s2.text.trim() && s2.status === 'Missing') s2.status = 'Needs evidence';
+    p.history.unshift({ at: nowISO(), by: getSession().name, action: `Section edited: ${s2.title}` }); save(); closeModal(); toast('Saved'); render();
+  };
+  forms['td-submit'] = (fd, form) => {
+    const x = findCatalog(form.dataset.id); const p = tdOf(x).find((y) => y.id === form.dataset.p); const regs = regsOf(x);
+    let r = regs.find((y) => y.id === fd.get('regId'));
+    if (!r) { const m = marketOf(p.market); r = { id: uid(), market: p.market, authority: m.authority, pathway: m.paths[0], status: 'Submitted', number: '', submitted: '', approved: '', expiry: '', holder: x.manufacturer || '', notes: '' }; regs.push(r); }
+    const date = fd.get('date') || todayStr();
+    Object.assign(r, { status: 'Submitted', submitted: date }); Object.assign(p, { status: 'Submitted', regId: r.id });
+    p.history.unshift({ at: nowISO(), by: getSession().name, action: `Submitted to ${r.authority} (${r.pathway}) on ${date}` }); save(); closeModal(); toast('Marked as submitted'); render();
+  };
+  forms['td-approve'] = (fd, form) => {
+    if (!checkPw(fd.get('password'))) { toast('Incorrect password'); return; }
+    const x = findCatalog(form.dataset.id); const list = tdOf(x); const p = list.find((y) => y.id === form.dataset.p); const s2 = getSession();
+    const number = String(fd.get('number')).trim(); const approved = fd.get('approved') || todayStr();
+    list.filter((y) => y.market === p.market && y.status === 'Final').forEach((y) => { y.status = 'Superseded'; y.history.unshift({ at: nowISO(), by: 'System', action: `Superseded by v${p.version.split('.')[0]}.${p.version.split('.')[1] || 0}` }); });
+    const ver = p.version.startsWith('0.') ? '1.0' : p.version;
+    Object.assign(p, { status: 'Final', version: ver, approvalNo: number, approvedAt: approved });
+    const r = regsOf(x).find((y) => y.id === p.regId); if (r) Object.assign(r, { status: 'Approved', number, approved, expiry: fd.get('expiry') || r.expiry });
+    p.history.unshift({ at: nowISO(), by: `${s2.name} (e-signature)`, action: `Approved by ${TD_TEMPLATES[p.market].authority} (${number}) — locked as final v${ver}` });
+    save(); closeModal(); toast(`Final v${ver} locked`); render();
+  };
   forms.ps = (fd, form) => {
     const x = findCatalog(form.dataset.id); const st = stdOf(x);
     if (st.status === 'Approved') { st.rev = pad2(Number(st.rev) + 1); st.approvedBy = ''; st.approvedAt = ''; }
@@ -2309,6 +2730,8 @@
     else if (ORG && parts[0] === 'quality' && parts[1] === 'policy') { html = viewPolicy(); title = 'Quality Policy'; }
     else if (ORG && parts[0] === 'quality' && parts[1] === 'objectives') { html = viewObjectives(); title = 'Quality Objectives'; }
     else if (parts[0] === 'products' && parts[1] === 'registrations') { html = viewRegistrations(); title = 'Market Authorizations'; }
+    else if (parts[0] === 'products' && parts[1] === 'techdocs') { html = viewTechDocs(); title = 'Technical Documentation'; }
+    else if (parts[0] === 'products' && parts[2] === 'techdocs' && parts[3]) { const x = findCatalog(parts[1]); html = x ? viewTechDoc(x, parts[3]) : null; if (!html) { go('/products'); return; } title = 'Technical documentation'; }
     else if (parts[0] === 'products' && parts[1] === 'standards') { html = viewStandards(); title = 'Product Standards'; }
     else if (parts[0] === 'products' && parts[1] === 'labels') { html = viewLabels(); title = 'Labels & UDI'; }
     else if (parts[0] === 'products' && parts[1] === 'versions') { go('/products'); return; }
