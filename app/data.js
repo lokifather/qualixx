@@ -138,8 +138,8 @@ window.QX = (function () {
   // Label of the Qualixx software itself (shown in "About Qualixx", sidebar and sign-in page)
   const APP = {
     product: 'Qualixx eQMS',
-    version: '0.10.0',
-    build: '20261102.2',
+    version: '0.11.0',
+    build: '20261102.3',
     releaseDate: '2026-10-28',
     channel: 'Demo',
     manufacturer: 'Qualixx Inc. (주식회사 퀄릭스, in incorporation)',
@@ -151,6 +151,7 @@ window.QX = (function () {
     validation: 'Customers validate Qualixx for its intended use under ISO 13485 §4.1.6. A validation package (requirements, risk assessment, test records) is provided per release.',
     standards: ['ISO 13485:2016', 'ISO 14971:2019', 'KGMP', '21 CFR 820 (QMSR)', '21 CFR Part 11 (design basis)'],
     releases: [
+      { version: '0.11.0', date: '2026-11-02', notes: 'Full text of the quality manual and all procedures with table of contents and links to related procedures and forms; procedures listed under Quality Documents › Procedures in the sidebar.' },
       { version: '0.10.0', date: '2026-11-02', notes: 'Ten colour themes in Settings: Blue & Gray, Gray, Mint Chocolate, Forest, Ocean, Rose, Sunset (light) and Midnight Violet, Graphite, Deep Navy (dark).' },
       { version: '0.9.0', date: '2026-11-02', notes: 'Dark theme (black glass, violet accents) selectable in Settings or with the moon button; dashboard Quality pulse chart and Audit readiness card.' },
       { version: '0.8.0', date: '2026-10-28', notes: 'Design and development file per product: phase gates, deliverables by product type, traceability matrix with gap check, design reviews, design changes and baselines. Technical documentation for MFDS, EU MDR and FDA 510(k) drafted from the design file; submission and approval tracking with locked final versions linked to market authorizations.' },

@@ -901,3 +901,35 @@ ul.plain li { padding: 8px 10px; background: var(--surface-2); border: 1px solid
 .theme-sw { display: flex; gap: 4px; margin-left: auto; }
 .theme-sw i { width: 12px; height: 12px; border-radius: 50%; border: 1px solid rgba(0, 0, 0, .08); }
 .theme-label { display: flex; align-items: center; gap: 6px; }
+/* ---------- v0.11 document full text + procedures in sidebar ---------- */
+.body-card { display: grid; grid-template-columns: 220px 1fr; gap: 0; margin: 16px 0; padding: 0; overflow: visible; }
+.body-toc { position: sticky; top: 12px; align-self: start; display: flex; flex-direction: column; gap: 2px; padding: 20px 14px; border-right: 1px solid var(--line); }
+.body-toc strong { font-size: 13px; margin: 0 6px 6px; }
+.body-toc button:not(.btn) { border: 0; background: none; font: inherit; font-size: 12.5px; color: var(--ink-2); text-align: left; padding: 6px 8px; border-radius: 8px; cursor: pointer; }
+.body-toc button:not(.btn):hover { background: var(--surface-2); color: var(--accent); }
+.body-toc .btn { margin-top: 12px; align-self: flex-start; }
+.body-doc { padding: 24px 32px 32px; min-width: 0; }
+.body-note { margin-bottom: 16px; }
+.body-head { margin-bottom: 8px; } .body-head th { width: 90px; }
+.body-sec { padding-top: 14px; margin-top: 14px; border-top: 1px solid var(--line); scroll-margin-top: 16px; }
+.body-sec h3 { margin: 0 0 10px; font-size: 16px; }
+.body-sec p { margin: 0 0 8px; line-height: 1.75; font-size: 14px; }
+.body-steps { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+.body-steps li { padding: 10px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-2); }
+.body-steps h4 { margin: 0 0 4px; font-size: 14px; }
+.body-steps p { margin: 0; }
+.body-list { margin: 0; padding-left: 18px; line-height: 1.8; font-size: 14px; }
+.body-table th { width: auto; }
+.proc-toggle { display: flex; align-items: center; gap: 6px; width: 100%; border: 0; background: none; font: inherit; font-size: 11.5px; color: var(--muted); padding: 2px 8px 4px 26px; cursor: pointer; text-align: left; }
+.proc-toggle .ic { width: 12px; height: 12px; transition: transform .15s; } .proc-toggle.open .ic { transform: rotate(90deg); }
+.proc-toggle:hover { color: var(--accent); }
+.proc-list { display: flex; flex-direction: column; gap: 1px; margin: 0 0 6px 16px; padding-left: 6px; border-left: 1px dashed var(--line-strong); max-height: 360px; overflow-y: auto; }
+.nav-item.sub2 { height: 28px; font-size: 12.5px; padding-left: 8px; gap: 6px; }
+.nav-item.sub2 span:last-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.nav-item.sub2 .nav-code { width: 30px; }
+@media (max-width: 900px) { .body-card { grid-template-columns: 1fr; } .body-toc { position: static; border-right: 0; border-bottom: 1px solid var(--line); flex-direction: row; flex-wrap: wrap; } .body-doc { padding: 16px; } }
+@media print { .body-card { display: block; border: 0; } .body-doc { padding: 0; } }
+.body-ok { background: var(--good-soft); color: var(--good); }
+.rd-h2 { margin: 16px 0 8px; font-size: 14.5px; } .rd-h3 { margin: 12px 0 6px; font-size: 13.5px; }
+.body-doc .table-wrap { margin: 8px 0 12px; }
+.body-table td, .body-table th { font-size: 13px; white-space: pre-wrap; }

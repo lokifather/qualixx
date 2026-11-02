@@ -327,6 +327,12 @@
           <tbody>${history.map((h) => `<tr><td>Rev.${esc(h.rev)}</td><td>${h.eff ? fmt(h.eff) : '—'}</td><td>${esc(h.change)}</td><td>${esc(h.by) || '—'}</td><td><span class="status s-${h.status.replace(' ', '')}">${esc(h.status)}</span></td></tr>`).join('')}</tbody></table></div>
         </article>
         ${content ? `<article class="card panel"><div class="panel-title"><h2>Content · Rev.${esc(e.rev)}</h2></div><pre class="doc-text">${esc(content)}</pre></article>`
+        : hasBody(d) ? `<article class="card panel file-card">
+          <div class="file-icon">${icon('doc')}</div>
+          <h3>Full text</h3>
+          <p class="muted">The full text of this ${d.type === 'Manual' ? 'manual' : 'procedure'} is shown below, with a table of contents and links to related procedures and forms.</p>
+          <button class="btn primary" data-action="scroll-body">Read full text</button>
+        </article>`
         : `<article class="card panel file-card">
           <div class="file-icon">${icon('doc')}</div>
           <h3>Controlled copy</h3>
@@ -334,6 +340,7 @@
           <button class="btn outline" disabled>Open file</button>
         </article>`}
       </section>
+      ${bodyReader(d)}
       ${ackPanel(d, e)}
       ${children.length ? `<h2 class="section-title">${d.type === 'Manual' ? 'Procedures under this manual' : 'Forms under this procedure'} <small class="muted">${children.length}</small></h2>
       <section class="card table-card"><div class="table-wrap"><table class="table">
@@ -341,7 +348,7 @@
         <tbody>${children.map(docRow).join('')}</tbody></table></div></section>` : ''}
       ${r && r.audit.length ? `<h2 class="section-title">Audit trail</h2>
       <section class="card table-card"><div class="table-wrap"><table class="table compact"><thead><tr><th>Time</th><th>User</th><th>Activity</th></tr></thead>
-      <tbody>${r.audit.map((a) => `<tr><td><small>${fmt(a.t, true)}</small></td><td>${esc(a.user)}</td><td>${esc(a.action)}</td></tr>`).join('')}</tbody></table></div></section>` : ''}`, d.type === 'Manual' ? 'documents:manual' : 'documents');
+      <tbody>${r.audit.map((a) => `<tr><td><small>${fmt(a.t, true)}</small></td><td>${esc(a.user)}</td><td>${esc(a.action)}</td></tr>`).join('')}</tbody></table></div></section>` : ''}`, d.type === 'Manual' ? 'documents:manual' : d.type === 'Procedure' ? 'documents:proc:' + d.id : 'documents');
   }
 
   function viewProcessMap() {
@@ -422,7 +429,7 @@
           controls: [c('design', 'Interpolated frames are visually marked and the original frames can be shown at any time with one click', 'FUE-04 UI specification, FAI-08 performance report', true, true), c('info', 'IFU states that measurements must be made on original frames, not interpolated frames', 'IFU draft', true, false)],
           rs: 4, rp: 1, newRiskReviewed: true, newRiskNote: 'Frame marking does not obscure diagnostic area', bra: '' },
         { id: uid(), code: 'H-002', category: 'Information', hazard: 'Interpolated series mixed with original series', sequence: 'Output stored to PACS without derived-image identification → series later viewed as original acquisition', situation: 'Interpolated images reviewed as acquired data', harm: 'Misdiagnosis at follow-up review', s: 3, p: 3,
-          controls: [c('design', 'DICOM output marked as DERIVED (Image Type) with series description "AngioFilm interpolated"', 'FDD-02 traceability, test report (TBD)', false, false)], rs: null, rp: null, newRiskReviewed: false, newRiskNote: '', bra: '' },
+          controls: [c('design', 'DICOM output marked as DERIVED (Image Type) with series description "AI interpolated"', 'FDD-02 traceability, test report (TBD)', false, false)], rs: null, rp: null, newRiskReviewed: false, newRiskNote: '', bra: '' },
         { id: uid(), code: 'H-003', category: 'Software', hazard: 'Processing delay or no response', sequence: 'GPU overload delays processing during the procedure → interpolated cine not available in time', situation: 'Physician waits or proceeds with original frames', harm: 'Prolonged procedure', s: 2, p: 3, controls: [], rs: null, rp: null, newRiskReviewed: false, newRiskNote: '', bra: '' },
         { id: uid(), code: 'H-004', category: 'Cybersecurity', hazard: 'Unauthorized access', sequence: 'On-premise server exposed on hospital network → attacker accesses stored images', situation: 'Patient images disclosed', harm: 'Privacy breach (non-physical harm)', s: 2, p: 2, controls: [], rs: null, rp: null, newRiskReviewed: false, newRiskNote: '', bra: '' }
       ],
@@ -687,6 +694,8 @@
     save();
   }
   function docTemplate(d) {
+    if (realDoc(d)) return realText(realDoc(d));
+    if (d.type !== 'Form' && hasBody(d)) return docBodyText(d).split(/\n\n\d+\. 개정 이력/)[0];
     const name = d.en.replace(/^(Procedure|Manual) for /, '');
     const forms = allDocs().filter((x) => x.parent === d.id).map((x) => `- ${x.id} ${x.en}`).join('\n') || '- (none)';
     if (d.type === 'Form') return `${d.id} ${d.en}\n\nHeader\n- Document / record number\n- Date\n- Prepared by\n\nContent\n- Item\n- Result\n- Remarks\n\nSign-off\n- Reviewed by / date\n- Approved by / date`;
@@ -970,10 +979,16 @@
     const open = secOpen(k, active);
     const on = (key) => active === key;
     return `<button class="nav-item nav-sec ${open ? 'open' : ''}" data-action="toggle-sec" data-k="${k}" aria-expanded="${open}">${icon(ic)}<span>${label}</span>${count != null && !open ? `<em class="count">${count}</em>` : ''}${icon('chevron', 'sec-chev')}</button>
-      ${open ? `<div class="nav-sec-items">${items.filter(Boolean).map(([href, l, key, n, alert]) => `<a href="${href}" class="nav-item sub ${on(key) ? 'on' : ''}"><span class="dot-ic"></span><span>${l}</span>${n != null && n !== '' ? `<em class="count ${alert ? 'alert-count' : ''}">${n}</em>` : ''}</a>`).join('')}</div>` : ''}`;
+      ${open ? `<div class="nav-sec-items">${items.filter(Boolean).map(([href, l, key, n, alert, extra]) => `<a href="${href}" class="nav-item sub ${on(key) ? 'on' : ''}"><span class="dot-ic"></span><span>${l}</span>${n != null && n !== '' ? `<em class="count ${alert ? 'alert-count' : ''}">${n}</em>` : ''}</a>${extra || ''}`).join('')}</div>` : ''}`;
   }
   const DOC_KEYS = { all: 'All', manual: 'Manual', procedures: 'Procedure', instructions: 'Instruction', forms: 'Form', changes: 'Changes', obsolete: 'Obsolete' };
   const docKeyOf = (t) => Object.keys(DOC_KEYS).find((k) => DOC_KEYS[k] === t) || 'all';
+  function procNav(active) {
+    const procs = allDocs().filter((d) => d.type === 'Procedure' && !(dcRec(d.id) || {}).obsolete);
+    const st = navState(); const open = (st.sec || {}).procs === true || String(active || '').startsWith('documents:proc:');
+    return `<button class="proc-toggle ${open ? 'open' : ''}" data-action="toggle-procs" aria-expanded="${open}">${icon('chevron')}<span>${open ? 'Hide procedures' : 'Show all procedures'}</span></button>
+      ${open ? `<div class="proc-list">${procs.map((d) => `<a href="#/documents/${esc(d.id)}" class="nav-item sub2 ${active === 'documents:proc:' + d.id ? 'on' : ''}"><span class="nav-code">${esc(d.id)}</span><span>${esc(procName(d.id))}</span></a>`).join('')}</div>` : ''}`;
+  }
   function docSection(active) {
     const docs = allDocs();
     const isObs = (d) => !!(dcRec(d.id) || {}).obsolete;
@@ -985,7 +1000,7 @@
       ['#/quality/policy', 'Quality Policy', 'documents:policy'],
       ['#/quality/objectives', 'Quality Objectives', 'documents:objectives', qms().objectives.filter((o) => objOk(o) === false).length || '', true],
       manual ? [`#/documents/${manual.id}`, 'Quality Manual', 'documents:manual'] : null,
-      ['#/documents/type/procedures', 'Procedures', 'documents:procedures', n('Procedure')],
+      ['#/documents/type/procedures', 'Procedures', 'documents:procedures', n('Procedure'), false, procNav(active)],
       n('Instruction') ? ['#/documents/type/instructions', 'Instructions', 'documents:instructions', n('Instruction')] : null,
       ['#/documents/type/forms', 'Forms', 'documents:forms', n('Form')],
       ['#/documents/type/changes', 'In Change', 'documents:changes', changes || '', true],
@@ -1778,6 +1793,109 @@
     </article>`;
   }
 
+  /* ---------- full text of the quality manual and procedures ---------- */
+  const QC = window.QX_CONTENT || { procedures: {}, manual: { sections: [] } };
+  const hasBody = (d) => !!d && (!!(QC.docs && QC.docs[d.id]) || (d.type === 'Procedure' && QC.procedures[d.id]) || (d.type === 'Manual' && QC.manual.sections.length));
+  function linkCodes(text) {
+    return esc(text).replace(/\b(MMS|P[A-Z]{2}|F[A-Z]{2}-\d{2})\b/g, (m) => (docById(m) ? `<a href="#/documents/${m}">${m}</a>` : m)).replace(/\n/g, '<br>');
+  }
+  function docBody(d) {
+    const forms = allDocs().filter((x) => x.parent === d.id);
+    const parent = d.parent ? docById(d.parent) : null;
+    const e = effRev(d);
+    const hist = [];
+    if (!isAdded(d)) hist.push([d.rev, d.effective, '제정']);
+    ((dcRec(d.id) || {}).revs || []).filter((v) => ['Effective', 'Superseded'].includes(v.status)).forEach((v) => hist.push([v.rev, v.effective, v.change]));
+    const table = (head, rows) => `<table class="kv body-table"><thead><tr>${head.map((h) => `<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map((r) => `<tr>${r.map((c) => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+    let secs;
+    if (d.type === 'Manual') {
+      secs = QC.manual.sections.map(([t, x]) => [t, `<p>${linkCodes(x)}</p>`]);
+      secs.push(['절차서 목록', table(['문서번호', '절차서', '담당'], allDocs().filter((x) => x.type === 'Procedure').map((x) => [`<a href="#/documents/${esc(x.id)}">${esc(x.id)}</a>`, esc(x.kr || x.en), esc(deptName(x.owner))]))]);
+    } else {
+      const c = QC.procedures[d.id];
+      const refs = [...new Set((c.st.map((s) => s[1]).join(' ').match(/\bP[A-Z]{2}\b/g) || []).filter((x) => x !== d.id && docById(x)))];
+      secs = [
+        ['목적', `<p>${linkCodes(c.p)}</p>`],
+        ['적용범위', `<p>${linkCodes(c.s)}</p>`],
+        ['용어의 정의', c.t && c.t.length ? table(['용어', '정의'], c.t.map(([a, b]) => [`<b>${esc(a)}</b>`, esc(b)])) : '<p>해당 없음. 용어는 ISO 9000, ISO 13485를 따른다.</p>'],
+        ['책임과 권한', table(['역할', '책임과 권한'], c.r.map(([a, b]) => [`<b>${esc(a)}</b>`, esc(b)]))],
+        ['업무 절차', `<ol class="body-steps">${c.st.map(([a, b], i) => `<li><h4>5.${i + 1} ${esc(a)}</h4><p>${linkCodes(b)}</p></li>`).join('')}</ol>`],
+        ['기록', forms.length ? table(['문서번호', '서식', '보관'], forms.map((f) => [`<a href="#/documents/${esc(f.id)}">${esc(f.id)}</a>`, esc(f.kr || f.en), '제품 수명 이상(최소 법정 보존 기간)'])) : '<p>이 절차서에 속한 서식이 없다.</p>'],
+        ['관련 문서 및 참고 규격', `<ul class="body-list">${parent ? `<li>${linkCodes(parent.id)} ${esc(parent.kr || parent.en)}</li>` : ''}${refs.map((x) => `<li>${linkCodes(x)} ${esc((docById(x) || {}).kr || '')}</li>`).join('')}${(d.clauses || []).length ? `<li>ISO 13485:2016 ${d.clauses.map((x) => '§' + esc(x)).join(', ')}</li>` : ''}<li>의료기기 제조 및 품질관리 기준(KGMP), 21 CFR 820 (QMSR)</li></ul>`]
+      ];
+    }
+    secs.push(['개정 이력', table(['개정', '시행일', '내용'], hist.map(([r, dt, ch]) => [`Rev.${esc(r)}`, dt ? fmt(dt) : '—', esc(ch)]))]);
+    return { secs, rev: e ? e.rev : '', effective: e ? e.effective : '' };
+  }
+  function docBodyText(d) {
+    const tmp = document.createElement('div');
+    return docBody(d).secs.map(([t, h], i) => { tmp.innerHTML = h.replace(/<br>/g, '\n').replace(/<\/(p|li|tr|h4)>/g, '\n').replace(/<\/td>/g, ' | '); return `${i + 1}. ${t}\n${tmp.textContent.trim()}`; }).join('\n\n');
+  }
+  /* ---------- organization's own approved documents (imported from Word) ---------- */
+  const realDoc = (d) => (QC.docs && d && QC.docs[d.id]) || null;
+  function realSections(rd) {
+    const secs = []; let cur = null;
+    rd.blocks.forEach((b) => {
+      if (b.k === 'h1') { cur = { t: b.x, parts: [] }; secs.push(cur); return; }
+      if (!cur) { cur = { t: '', parts: [] }; secs.push(cur); }
+      cur.parts.push(b);
+    });
+    return secs;
+  }
+  function blocksHtml(parts) {
+    let html = ''; let list = false;
+    parts.forEach((b) => {
+      if (b.k !== 'li' && list) { html += '</ul>'; list = false; }
+      if (b.k === 'h2') html += `<h4 class="rd-h2">${linkCodes(b.x)}</h4>`;
+      else if (b.k === 'h3') html += `<h5 class="rd-h3">${linkCodes(b.x)}</h5>`;
+      else if (b.k === 'li') { if (!list) { html += '<ul class="body-list">'; list = true; } html += `<li>${linkCodes(b.x)}</li>`; }
+      else if (b.k === 'tbl') {
+        const rows = b.rows.filter((r) => r.some((c) => c));
+        if (!rows.length) return;
+        html += `<div class="table-wrap"><table class="kv body-table"><thead><tr>${rows[0].map((c) => `<th>${linkCodes(c)}</th>`).join('')}</tr></thead><tbody>${rows.slice(1).map((r) => `<tr>${r.map((c) => `<td>${linkCodes(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+      } else html += `<p>${linkCodes(b.x)}</p>`;
+    });
+    if (list) html += '</ul>';
+    return html;
+  }
+  function realText(rd) {
+    return realSections(rd).filter((s) => !/^(Revision History|Document Approval)$/i.test(s.t)).map((s) => [s.t].concat(s.parts.map((b) => b.k === 'tbl' ? b.rows.map((r) => r.join(' | ')).join('\n') : (b.k === 'li' ? '- ' : '') + b.x)).join('\n')).join('\n\n');
+  }
+
+  function realReader(d, rd) {
+    const secs = realSections(rd);
+    const date = rd.date ? `${rd.date.slice(0, 4)}-${rd.date.slice(4, 6)}-${rd.date.slice(6, 8)}` : '';
+    return `<section class="card body-card" id="doc-body">
+      <aside class="body-toc no-print"><strong>목차</strong>${secs.map((s, i) => `<button data-action="scroll-sec" data-i="${i}">${esc(s.t || '—')}</button>`).join('')}
+        <button class="btn outline sm" data-action="print">${icon('print')}Print / PDF</button></aside>
+      <article class="body-doc no-tr">
+        <p class="alert body-note body-ok no-print">${QC.template ? 'Qualixx 표준 템플릿 — 실제 의료기기 소프트웨어 품질문서를 바탕으로 익명화한 예시입니다. [회사명], [제품명] 등을 회사 정보로 바꾸거나 회사의 승인 문서로 교체하여 사용합니다.' : `승인 문서 원문 — ${esc(d.id)}_${esc(rd.date)}_#${esc(rd.rev)}.docx 에서 가져온 내용입니다.`}</p>
+        <table class="kv body-head"><tr><th>문서번호</th><td>${esc(d.id)}</td><th>개정</th><td>Rev.${esc(rd.rev)}</td></tr>
+          <tr><th>문서명</th><td colspan="3"><b>${esc(d.kr || d.en)}</b><br><small class="muted">${esc(d.en)}</small></td></tr>
+          <tr><th>시행일</th><td>${date ? fmt(date) : '—'}</td><th>주관</th><td>${esc(deptName(d.owner))}</td></tr></table>
+        ${secs.map((s, i) => `<section class="body-sec" id="body-sec-${i}">${s.t ? `<h3>${linkCodes(s.t)}</h3>` : ''}${blocksHtml(s.parts)}</section>`).join('')}
+      </article>
+    </section>`;
+  }
+
+  function bodyReader(d) {
+    if (!hasBody(d)) return '';
+    if (realDoc(d)) return realReader(d, realDoc(d));
+    const B = docBody(d);
+    const qualixx = !ORG || ORG.short === 'Qualixx';
+    return `<section class="card body-card" id="doc-body">
+      <aside class="body-toc no-print"><strong>목차</strong>${B.secs.map(([t], i) => `<button data-action="scroll-sec" data-i="${i}">${i + 1}. ${esc(t)}</button>`).join('')}
+        <button class="btn outline sm" data-action="print">${icon('print')}Print / PDF</button></aside>
+      <article class="body-doc no-tr">
+        <p class="alert soft body-note no-print">${qualixx ? '예시 내용 — Qualixx 표준 템플릿입니다. 회사의 승인된 문서로 교체하여 사용합니다.' : '예시 내용 — Qualixx 표준 템플릿 기반 초안입니다. 승인된 회사 절차서로 교체해야 합니다.'}</p>
+        <table class="kv body-head"><tr><th>문서번호</th><td>${esc(d.id)}</td><th>개정</th><td>Rev.${esc(B.rev || d.rev)}</td></tr>
+          <tr><th>문서명</th><td colspan="3"><b>${esc(d.kr || d.en)}</b><br><small class="muted">${esc(d.en)}</small></td></tr>
+          <tr><th>시행일</th><td>${B.effective ? fmt(B.effective) : '—'}</td><th>주관</th><td>${esc(deptName(d.owner))}</td></tr></table>
+        ${B.secs.map(([t, h], i) => `<section class="body-sec" id="body-sec-${i}"><h3>${i + 1}. ${esc(t)}</h3>${h}</section>`).join('')}
+      </article>
+    </section>`;
+  }
+
   /* ---------- settings ---------- */
   function viewSettings() {
     const s2 = getSession();
@@ -2343,6 +2461,9 @@
     'toggle-menu': () => document.getElementById('sidebar').classList.toggle('open'),
     filter: (el) => { tableFilter = el.dataset.f; render(); },
     'doc-type': (el) => go('/documents/type/' + docKeyOf(el.dataset.t)),
+    'toggle-procs': () => { const st = navState(); st.sec = st.sec || {}; st.sec.procs = !(st.sec.procs === true); saveNavState(st); render(); },
+    'scroll-body': () => { const b = document.getElementById('doc-body'); if (b) b.scrollIntoView({ behavior: 'smooth', block: 'start' }); },
+    'scroll-sec': (el) => { const b = document.getElementById('body-sec-' + el.dataset.i); if (b) b.scrollIntoView({ behavior: 'smooth', block: 'start' }); },
     'toggle-sec': (el) => { const st = navState(); st.sec = st.sec || {}; const k = el.dataset.k; st.sec[k] = !(st.sec[k] !== false); saveNavState(st); render(); },
     'task-filter': (el) => { taskFilter = el.dataset.k; render(); },
     'set-theme': (el) => { setTheme(el.dataset.t); render(); },
