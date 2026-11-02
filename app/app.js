@@ -81,6 +81,8 @@
     chevron: '<path d="m9 6 6 6-6 6"/>',
     info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/>',
     check: '<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>',
+    moon: '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/>',
+    sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
     box: '<path d="M21 8 12 3 3 8v8l9 5 9-5V8Z"/><path d="m3 8 9 5 9-5M12 13v8"/>'
   };
   const icon = (n, cls) => `<svg class="ic ${cls || ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n] || ''}</svg>`;
@@ -189,6 +191,7 @@
         <div class="profile-card">
           <span class="avatar">${esc(initials(s.name))}</span>
           <span class="profile-text"><strong>${esc(s.name)}</strong><small>${esc(s.role)}</small></span>
+          <button class="theme-btn" data-action="toggle-theme" title="${getTheme() === 'dark' ? 'Light mode' : 'Dark mode'}" aria-label="${getTheme() === 'dark' ? 'Light mode' : 'Dark mode'}">${icon(getTheme() === 'dark' ? 'sun' : 'moon')}</button>
         </div>
         <button class="side-search" data-action="open-search" aria-label="Search (Ctrl+K)">${icon('search')}<span>Search</span><kbd>Ctrl K</kbd></button>
         <nav class="side-nav" aria-label="Main">
@@ -1693,11 +1696,82 @@
       <div class="form-actions"><button class="btn outline" type="button" data-action="close-modal">Cancel</button><button class="btn primary" type="submit">Sign &amp; lock final version</button></div></form>`);
   }
 
+  /* ---------- theme (light / dark) and dashboard pulse ---------- */
+  const THEME_KEY = 'qx-theme';
+  function getTheme() { try { return localStorage.getItem(THEME_KEY) || 'light'; } catch (e) { return getTheme._m || 'light'; } }
+  function setTheme(t) { getTheme._m = t; try { localStorage.setItem(THEME_KEY, t); } catch (e) { /* memory only */ } document.documentElement.setAttribute('data-theme', t); }
+  document.documentElement.setAttribute('data-theme', getTheme());
+
+  function activityEvents() {
+    const ev = [];
+    const push = (t, a) => { if (t) ev.push({ t: new Date(t).getTime(), sign: /sign|approv/i.test(a || '') }); };
+    db.products.forEach((p) => p.audit.forEach((a) => push(a.t, a.action)));
+    if (ORG) Object.values(dcStore().docs).forEach((r) => r.audit.forEach((a) => push(a.t, a.action)));
+    catalog().forEach((x) => {
+      dhfOf(x); tdOf(x);
+      (x.techdocs || []).forEach((p) => p.history.forEach((h) => push(h.at, h.action)));
+      if (x.dhf) { x.dhf.items.forEach((i) => i.date && push(i.date, i.status === 'Approved' ? 'approved' : '')); x.dhf.reviews.forEach((r) => push(r.date, 'approved')); Object.values(x.dhf.gates).forEach((g) => push(g.at, 'sign')); }
+    });
+    return ev;
+  }
+  function pulseCard() {
+    const weeks = 12; const now = Date.now(); const W = 7 * DAY;
+    const all = new Array(weeks).fill(0); const sig = new Array(weeks).fill(0);
+    activityEvents().forEach((e) => { const i = weeks - 1 - Math.floor((now - e.t) / W); if (i >= 0 && i < weeks) { all[i]++; if (e.sign) sig[i]++; } });
+    const w = 560; const h = 150; const max = Math.max(4, ...all);
+    const pts = (arr) => arr.map((v, i) => [Math.round(i * (w / (weeks - 1))), Math.round(h - 12 - v / max * (h - 30))]);
+    const smooth = (p) => p.map((q, i) => i === 0 ? `M${q[0]},${q[1]}` : `C${(p[i - 1][0] + q[0]) / 2},${p[i - 1][1]} ${(p[i - 1][0] + q[0]) / 2},${q[1]} ${q[0]},${q[1]}`).join(' ');
+    const a = pts(all); const s = pts(sig);
+    const total = all.reduce((x, y) => x + y, 0); const last = all[weeks - 1]; const prev = all[weeks - 2] || 0;
+    const delta = prev ? Math.round((last - prev) / prev * 100) : (last ? 100 : 0);
+    return `<article class="card pulse-card">
+      <div class="pulse-head"><div><span class="pulse-ic">${icon('process')}</span><div><h2>Quality pulse</h2><small class="muted">Last 12 weeks</small></div></div>
+        <div class="pulse-legend"><span><i class="lg1"></i>All quality activity</span><span><i class="lg2"></i>Approvals and e-signatures</span></div></div>
+      <div class="pulse-body">
+        <div class="pulse-num"><strong>${total}</strong><small class="muted">records in 12 weeks</small><span class="delta ${delta >= 0 ? 'up' : 'down'}">${delta >= 0 ? '+' : ''}${delta}%</span><small class="muted">vs last week</small></div>
+        <svg class="pulse-chart" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" role="img" aria-label="Quality activity per week">
+          <defs><linearGradient id="pg1" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="var(--chart-1)" stop-opacity=".28"/><stop offset="1" stop-color="var(--chart-1)" stop-opacity="0"/></linearGradient></defs>
+          ${[0.25, 0.5, 0.75].map((f) => `<line x1="0" x2="${w}" y1="${Math.round(h * f)}" y2="${Math.round(h * f)}" class="pulse-grid"/>`).join('')}
+          <path d="${smooth(a)} L${w},${h} L0,${h} Z" fill="url(#pg1)"/>
+          <path d="${smooth(a)}" class="pulse-l1"/>
+          <path d="${smooth(s)}" class="pulse-l2"/>
+          <circle cx="${a[weeks - 1][0] - 3}" cy="${a[weeks - 1][1]}" r="4" class="pulse-dot"/>
+        </svg>
+      </div>
+    </article>`;
+  }
+  function readinessCard() {
+    const items = catalog().flatMap((x) => dhfStats(x).items);
+    const dhf = items.length ? items.filter((i) => i.status === 'Approved').length / items.length : 0;
+    const objs = ORG ? qms().objectives : [];
+    const obj = objs.length ? objs.filter((o) => objOk(o) === true).length / objs.length : 0;
+    const tasks = myTasks(); const late = tasks.filter((t) => t.due && t.due < todayStr()).length;
+    const onTime = tasks.length ? 1 - late / tasks.length : 1;
+    const parts = [['Design files', dhf], ['Quality objectives', obj], ['Tasks on time', onTime]].filter((p, i) => ORG || i !== 1);
+    const score = Math.round(parts.reduce((n, p) => n + p[1], 0) / parts.length * 100);
+    return `<article class="card ready-card">
+      <div class="ready-top"><span class="chip">${icon('check')}Audit readiness</span><span class="orb" aria-hidden="true"></span></div>
+      <small class="muted">Overall</small>
+      <strong class="ready-num">${score}<small>%</small></strong>
+      <ul class="ready-bars">${parts.map(([l, v]) => `<li><span>${esc(l)}</span><i><b style="width:${Math.round(v * 100)}%"></b></i><em>${Math.round(v * 100)}%</em></li>`).join('')}</ul>
+      <div class="ready-actions">
+        <a href="#/tasks">${icon('check')}<small>Tasks</small></a>
+        <a href="#/documents">${icon('doc')}<small>Documents</small></a>
+        <a href="#/products">${icon('box')}<small>Products</small></a>
+        <a href="#/products/techdocs">${icon('send')}<small>Tech docs</small></a>
+      </div>
+    </article>`;
+  }
+
   /* ---------- settings ---------- */
   function viewSettings() {
     const s2 = getSession();
     return shell(`
       ${pageHead('Settings', 'Preferences for your account.', '<a href="#/dashboard">My Dashboard</a> / Settings')}
+      <section class="card panel" style="margin-bottom:16px">
+        <div class="panel-title"><h2>Appearance</h2><p class="muted">Light is the standard Blue &amp; Gray theme. Dark is a black glass theme with violet accents for low-light work and presentations.</p></div>
+        <div class="theme-grid" role="radiogroup" aria-label="Appearance">${[['light', 'Light', 'tp-light'], ['dark', 'Dark', 'tp-dark']].map(([k, l, c]) => `<button class="theme-card ${getTheme() === k ? 'on' : ''}" role="radio" aria-checked="${getTheme() === k}" data-action="set-theme" data-t="${k}"><span class="theme-prev ${c}"><i></i><i></i></span><span><strong>${l}</strong>${getTheme() === k ? ' ✓' : ''}</span></button>`).join('')}</div>
+      </section>
       <section class="card panel">
         <div class="panel-title"><h2>Display language</h2><p class="muted">Choose the language for menus, buttons and messages. Content you enter — documents, products and records — stays in the language it was written in.</p></div>
         <div class="lang-grid" role="radiogroup" aria-label="Display language">${I18N.LANGS.map((l) => `<button class="lang-card ${I18N.lang === l.id ? 'on' : ''}" role="radio" aria-checked="${I18N.lang === l.id}" data-action="set-lang" data-l="${l.id}"><span class="lc-check">${I18N.lang === l.id ? '✓' : ''}</span><span class="no-tr"><strong>${esc(l.native)}</strong><small>${esc(l.name)}</small></span></button>`).join('')}</div>
@@ -1870,6 +1944,7 @@
     const s = getSession();
     return shell(`
       ${pageHead('My Dashboard', `Welcome back, ${esc(s.name)}. This view shows what your role (${esc(s.role)}) can access.`)}
+      <section class="pulse-row">${pulseCard()}${readinessCard()}</section>
       ${tasksCard()}
       <section class="dash-grid">
         <article class="card report-card">
@@ -2254,6 +2329,8 @@
     'doc-type': (el) => go('/documents/type/' + docKeyOf(el.dataset.t)),
     'toggle-sec': (el) => { const st = navState(); st.sec = st.sec || {}; const k = el.dataset.k; st.sec[k] = !(st.sec[k] !== false); saveNavState(st); render(); },
     'task-filter': (el) => { taskFilter = el.dataset.k; render(); },
+    'set-theme': (el) => { setTheme(el.dataset.t); render(); },
+    'toggle-theme': () => { setTheme(getTheme() === 'dark' ? 'light' : 'dark'); render(); },
     'set-lang': (el) => { I18N.set(el.dataset.l); render(); toast('Language changed'); },
     'new-obj': () => objModal(null),
     'edit-ps': (el) => psModal(findCatalog(el.dataset.id)),
