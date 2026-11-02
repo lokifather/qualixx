@@ -191,7 +191,7 @@
         <div class="profile-card">
           <span class="avatar">${esc(initials(s.name))}</span>
           <span class="profile-text"><strong>${esc(s.name)}</strong><small>${esc(s.role)}</small></span>
-          <button class="theme-btn" data-action="toggle-theme" title="${getTheme() === 'dark' ? 'Light mode' : 'Dark mode'}" aria-label="${getTheme() === 'dark' ? 'Light mode' : 'Dark mode'}">${icon(getTheme() === 'dark' ? 'sun' : 'moon')}</button>
+          ${(() => { const d = themeOf(getTheme()).mode === 'dark'; return `<button class="theme-btn" data-action="toggle-theme" title="${d ? 'Light mode' : 'Dark mode'}" aria-label="${d ? 'Light mode' : 'Dark mode'}">${icon(d ? 'sun' : 'moon')}</button>`; })()}
         </div>
         <button class="side-search" data-action="open-search" aria-label="Search (Ctrl+K)">${icon('search')}<span>Search</span><kbd>Ctrl K</kbd></button>
         <nav class="side-nav" aria-label="Main">
@@ -1698,9 +1698,24 @@
 
   /* ---------- theme (light / dark) and dashboard pulse ---------- */
   const THEME_KEY = 'qx-theme';
-  function getTheme() { try { return localStorage.getItem(THEME_KEY) || 'light'; } catch (e) { return getTheme._m || 'light'; } }
-  function setTheme(t) { getTheme._m = t; try { localStorage.setItem(THEME_KEY, t); } catch (e) { /* memory only */ } document.documentElement.setAttribute('data-theme', t); }
-  document.documentElement.setAttribute('data-theme', getTheme());
+  const THEMES = [
+    { id: 'light', name: 'Blue & Gray', mode: 'light', sw: ['#f1f3f6', '#1d3f8f', '#3b82f6'] },
+    { id: 'gray', name: 'Gray', mode: 'light', sw: ['#f3f3f4', '#3f3f46', '#a1a1aa'] },
+    { id: 'mint', name: 'Mint Chocolate', mode: 'light', sw: ['#edf6f2', '#4a2c27', '#3eb489'] },
+    { id: 'forest', name: 'Forest', mode: 'light', sw: ['#f1f5f2', '#166534', '#22c55e'] },
+    { id: 'ocean', name: 'Ocean', mode: 'light', sw: ['#eff6f7', '#0e7490', '#06b6d4'] },
+    { id: 'rose', name: 'Rose', mode: 'light', sw: ['#fbf3f5', '#be185d', '#ec4899'] },
+    { id: 'sunset', name: 'Sunset', mode: 'light', sw: ['#fbf5f0', '#c2410c', '#f97316'] },
+    { id: 'dark', name: 'Midnight Violet', mode: 'dark', sw: ['#08080c', '#7c6cff', '#f5d061'] },
+    { id: 'graphite', name: 'Graphite', mode: 'dark', sw: ['#141518', '#9ca3af', '#60a5fa'] },
+    { id: 'navy', name: 'Deep Navy', mode: 'dark', sw: ['#060b16', '#3b82f6', '#22d3ee'] }
+  ];
+  const themeOf = (id) => THEMES.find((t) => t.id === id) || THEMES[0];
+  const store = { get(k, d) { try { return localStorage.getItem(k) || d; } catch (e) { return (store.m || {})[k] || d; } }, set(k, v) { store.m = Object.assign(store.m || {}, { [k]: v }); try { localStorage.setItem(k, v); } catch (e) { /* memory only */ } } };
+  function getTheme() { return themeOf(store.get(THEME_KEY, 'light')).id; }
+  function applyTheme() { const t = themeOf(getTheme()); document.documentElement.setAttribute('data-theme', t.id); document.documentElement.setAttribute('data-mode', t.mode); }
+  function setTheme(id) { const t = themeOf(id); store.set(THEME_KEY, t.id); store.set(THEME_KEY + '-' + t.mode, t.id); applyTheme(); }
+  applyTheme();
 
   function activityEvents() {
     const ev = [];
@@ -1769,8 +1784,9 @@
     return shell(`
       ${pageHead('Settings', 'Preferences for your account.', '<a href="#/dashboard">My Dashboard</a> / Settings')}
       <section class="card panel" style="margin-bottom:16px">
-        <div class="panel-title"><h2>Appearance</h2><p class="muted">Light is the standard Blue &amp; Gray theme. Dark is a black glass theme with violet accents for low-light work and presentations.</p></div>
-        <div class="theme-grid" role="radiogroup" aria-label="Appearance">${[['light', 'Light', 'tp-light'], ['dark', 'Dark', 'tp-dark']].map(([k, l, c]) => `<button class="theme-card ${getTheme() === k ? 'on' : ''}" role="radio" aria-checked="${getTheme() === k}" data-action="set-theme" data-t="${k}"><span class="theme-prev ${c}"><i></i><i></i></span><span><strong>${l}</strong>${getTheme() === k ? ' ✓' : ''}</span></button>`).join('')}</div>
+        <div class="panel-title"><h2>Appearance</h2><p class="muted">Choose a colour theme. The moon / sun button in the sidebar switches between your last light and dark theme.</p></div>
+        ${['light', 'dark'].map((mode) => `<h3>${mode === 'light' ? 'Light themes' : 'Dark themes'}</h3>
+        <div class="theme-grid" role="radiogroup" aria-label="${mode === 'light' ? 'Light themes' : 'Dark themes'}">${THEMES.filter((t) => t.mode === mode).map((t) => { const on = getTheme() === t.id; return `<button class="theme-card ${on ? 'on' : ''}" role="radio" aria-checked="${on}" data-action="set-theme" data-t="${t.id}"><span class="theme-prev" style="background:${t.sw[0]}"><i style="background:${mode === 'dark' ? 'rgba(255,255,255,.07)' : '#fff'};border:1px solid ${mode === 'dark' ? 'rgba(255,255,255,.1)' : 'rgba(0,0,0,.06)'}"></i><i style="background:linear-gradient(135deg, ${mode === 'dark' ? 'rgba(255,255,255,.05)' : '#fff'} 45%, ${t.sw[1]})"></i></span><span class="theme-label"><strong class="no-tr">${esc(t.name)}</strong>${on ? ' ✓' : ''}<span class="theme-sw">${t.sw.slice(1).map((c) => `<i style="background:${c}"></i>`).join('')}</span></span></button>`; }).join('')}</div>`).join('')}
       </section>
       <section class="card panel">
         <div class="panel-title"><h2>Display language</h2><p class="muted">Choose the language for menus, buttons and messages. Content you enter — documents, products and records — stays in the language it was written in.</p></div>
@@ -2330,7 +2346,7 @@
     'toggle-sec': (el) => { const st = navState(); st.sec = st.sec || {}; const k = el.dataset.k; st.sec[k] = !(st.sec[k] !== false); saveNavState(st); render(); },
     'task-filter': (el) => { taskFilter = el.dataset.k; render(); },
     'set-theme': (el) => { setTheme(el.dataset.t); render(); },
-    'toggle-theme': () => { setTheme(getTheme() === 'dark' ? 'light' : 'dark'); render(); },
+    'toggle-theme': () => { const dark = themeOf(getTheme()).mode === 'dark'; setTheme(store.get(THEME_KEY + (dark ? '-light' : '-dark'), dark ? 'light' : 'dark')); render(); },
     'set-lang': (el) => { I18N.set(el.dataset.l); render(); toast('Language changed'); },
     'new-obj': () => objModal(null),
     'edit-ps': (el) => psModal(findCatalog(el.dataset.id)),
