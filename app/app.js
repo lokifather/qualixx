@@ -181,48 +181,154 @@
     { id: 'pms', name: 'Complaints & PMS', std: 'ISO 14971 §10', icon: 'pms', desc: 'Feed complaints and post-market data back into risk management.', tag: 'Phase 2' }
   ];
 
+  /* ---------- navigation: top-level sections (top bar) + contextual side menu ---------- */
+  function sections() {
+    return [
+      { k: 'home', label: 'Home', ic: 'dashboard', href: '#/dashboard' },
+      { k: 'products', label: 'Products', ic: 'box', href: '#/products' },
+      ORG ? { k: 'quality', label: 'Quality System', ic: 'doc', href: '#/documents' } : { k: 'quality', label: 'Work Process', ic: 'process', href: '#/process' },
+      ORG ? { k: 'team', label: 'Team', ic: 'users', href: '#/people' } : null
+    ].filter(Boolean);
+  }
+  function sectionOf(active) {
+    const a = String(active || '');
+    if (a === 'dashboard' || a === 'tasks') return 'home';
+    if (a === 'products' || a.startsWith('products:')) return 'products';
+    if (a.startsWith('documents') || a.startsWith('proc:') || a === 'process' || a === 'risk') return 'quality';
+    if (a === 'people' || a === 'messages') return 'team';
+    if (a === 'settings' || a === 'help' || a === 'about') return 'account';
+    return 'home';
+  }
+  function procCodeOf(active) {
+    const a = String(active || '');
+    if (a.startsWith('documents:proc:')) return a.slice(15);
+    if (a.startsWith('proc:')) return a.slice(5);
+    if (a === 'risk' && ORG && ORG.liveProcesses) return Object.keys(ORG.liveProcesses).find((k) => ORG.liveProcesses[k] === 'risk') || '';
+    return '';
+  }
+  const workHref = (code) => (ORG && ORG.liveProcesses && ORG.liveProcesses[code]) ? `#/process/${ORG.liveProcesses[code]}` : code === 'PDR' ? '#/process/doc-control' : `#/process/p/${code}`;
+  function recentDocs() { const st = navState(); const email = (getSession() || {}).email || ''; return ((st.recent || {})[email] || []).filter((id) => docById(id)); }
+  function noteRecent(id) {
+    const st = navState(); const email = (getSession() || {}).email || '';
+    st.recent = st.recent || {}; const cur = (st.recent[email] || []).filter((x) => x !== id);
+    cur.unshift(id); st.recent[email] = cur.slice(0, 5); saveNavState(st);
+  }
+
+  /* one procedure = one place: its text and its work, switched with tabs */
+  function procStrip(code, active) {
+    const d = ORG && docById(code);
+    if (!d || d.type !== 'Procedure') return '';
+    const onDoc = String(active).startsWith('documents:');
+    const pinned = pins().includes(code);
+    const live = ORG.liveProcesses && ORG.liveProcesses[code];
+    return `<div class="proc-strip no-print">
+      <span class="ps-name"><span class="code-badge no-tr">${esc(code)}</span><strong>${esc(procName(code))}</strong><small class="muted">${esc(d.kr)}</small></span>
+      <nav class="seg" aria-label="Procedure views">
+        <a href="#/documents/${esc(code)}" class="${onDoc ? 'on' : ''}">${icon('doc')}Procedure text</a>
+        <a href="${workHref(code)}" class="${onDoc ? '' : 'on'}">${icon(live === 'risk' ? 'risk' : 'process')}Work &amp; records${live || code === 'PDR' ? '<i class="live-dot" title="Workflow live"></i>' : ''}</a>
+      </nav>
+      <button class="icon-btn star-btn ${pinned ? 'pinned' : ''}" data-action="pin" data-code="${esc(code)}" aria-pressed="${pinned}" title="${pinned ? 'Unpin' : 'Pin to Home'}">${icon('star')}</button>
+    </div>`;
+  }
+
+  function subNav(sec, active) {
+    const a = String(active || '');
+    const item = (href, label, on, count, alert, cls) => `<a href="${href}" class="nav-item ${cls || ''} ${on ? 'on' : ''}"><span>${label}</span>${count != null && count !== '' ? `<em class="count ${alert ? 'alert-count' : ''}">${count}</em>` : ''}</a>`;
+    const label = (t, extra) => `<p class="side-label">${t}${extra != null ? ` <small>${extra}</small>` : ''}</p>`;
+    const procItem = (code, on) => `<a href="#/documents/${esc(code)}" class="nav-item sub ${on ? 'on' : ''}"><span class="nav-code no-tr">${esc(code)}</span><span>${esc(procName(code))}</span>${ORG.liveProcesses && ORG.liveProcesses[code] ? '<i class="live-dot" title="Workflow live"></i>' : ''}</a>`;
+    const pc = procCodeOf(active);
+    if (sec === 'home') {
+      const n = myTasks().length;
+      const my = ORG ? pins().filter((c) => docById(c)) : [];
+      const rec = ORG ? recentDocs() : [];
+      return item('#/dashboard', 'My Dashboard', a === 'dashboard') + item('#/tasks', 'My Tasks', a === 'tasks', n || '', true)
+        + (my.length ? label('Pinned procedures') + my.map((c) => procItem(c, false)).join('') : '')
+        + (rec.length ? label('Recently viewed') + rec.map((id) => { const d = docById(id); return `<a href="#/documents/${esc(id)}" class="nav-item sub"><span class="nav-code no-tr">${esc(id)}</span><span>${esc(d.kr || d.en)}</span></a>`; }).join('') : '');
+    }
+    if (sec === 'products') {
+      const cat = catalog();
+      const cur = (currentPath.match(/^\/products\/([^/]+)/) || [])[1];
+      return item('#/products', 'All Products', a === 'products' && !cur, cat.length)
+        + label('Products') + cat.map((x) => `<a href="#/products/${x.id}" class="nav-item sub ${cur === x.id ? 'on' : ''}"><span class="dot-ic"></span><span class="no-tr">${esc(x.model || x.name)}</span><small class="nav-hint no-tr">${esc(x.name)}</small></a>`).join('')
+        + label('Across products')
+        + item('#/products/registrations', 'Authorizations', a === 'products:registrations', cat.flatMap(regsOf).filter(renewSoon).length || '', true)
+        + item('#/products/techdocs', 'Technical Docs', a === 'products:techdocs', cat.flatMap(tdOf).filter((p) => p.status === 'Final').length || '')
+        + item('#/products/standards', 'Product Standards', a === 'products:standards')
+        + item('#/products/labels', 'Labels & UDI', a === 'products:labels');
+    }
+    if (sec === 'quality' && ORG) {
+      const docs = allDocs();
+      const isObs = (d) => !!(dcRec(d.id) || {}).obsolete;
+      const n = (t) => docs.filter((d) => !isObs(d) && d.type === t).length;
+      const manual = docs.find((d) => d.type === 'Manual');
+      const changes = docs.filter((d) => openRev(d)).length;
+      const obs = docs.filter(isObs).length;
+      const open = navState().open || {};
+      return item('#/quality/policy', 'Quality Policy', a === 'documents:policy')
+        + item('#/quality/objectives', 'Quality Objectives', a === 'documents:objectives', qms().objectives.filter((o) => objOk(o) === false).length || '', true)
+        + (manual ? item(`#/documents/${manual.id}`, 'Quality Manual', a === 'documents:manual') : '')
+        + label('Procedures') + item('#/documents/type/procedures', 'All Procedures', a === 'documents:procedures', n('Procedure'))
+        + ORG.groups.map((g) => {
+          const codes = g.codes.filter((c) => docById(c) && !isObs(docById(c)));
+          const isOpen = !!open[g.id] || codes.includes(pc);
+          return `<button class="nav-group ${isOpen ? 'open' : ''}" data-action="toggle-group" data-g="${g.id}" aria-expanded="${isOpen}">${icon('chevron')}<span>${esc(g.name)}</span><em>${codes.length}</em></button>
+            ${isOpen ? `<div class="nav-group-items">${codes.map((c) => procItem(c, c === pc)).join('')}</div>` : ''}`;
+        }).join('')
+        + label('Documents')
+        + item('#/documents/type/forms', 'Forms', a === 'documents:forms', n('Form'))
+        + (n('Instruction') ? item('#/documents/type/instructions', 'Instructions', a === 'documents:instructions', n('Instruction')) : '')
+        + item('#/documents/type/changes', 'In Change', a === 'documents:changes', changes || '', true)
+        + item('#/documents/type/obsolete', 'Obsolete', a === 'documents:obsolete', obs || '')
+        + item('#/documents/type/all', 'All Documents', a === 'documents:all' || a === 'documents', docs.length - obs)
+        + label('Processes')
+        + item('#/process', 'Process Map', a === 'process');
+    }
+    if (sec === 'quality') {
+      return item('#/process', 'All Processes', a === 'process') + item('#/process/risk', 'Risk Management', a === 'risk')
+        + PROCESSES.filter((x) => !x.live).map((x) => `<span class="nav-item disabled" aria-disabled="true"><span>${x.name}</span><em>Soon</em></span>`).join('');
+    }
+    if (sec === 'team') return item('#/people', 'People', a === 'people') + item('#/messages', 'Messages', a === 'messages');
+    return item('#/settings', 'Settings', a === 'settings', I18N.lang.toUpperCase()) + item('#/help', 'Help', a === 'help') + item('#/about', 'About Qualixx', a === 'about')
+      + `<button class="nav-item" data-action="logout"><span>Sign out</span></button>`;
+  }
+
   function shell(content, active) {
     const s = getSession();
-    const nav = (href, ic, label, key, extra) => `<a href="${href}" class="nav-item ${active === key ? 'on' : ''}">${icon(ic)}<span>${label}</span>${extra || ''}</a>`;
+    const sec = sectionOf(active);
+    const secs = sections();
+    const curSec = secs.find((x) => x.k === sec) || { label: 'Account', ic: 'settings' };
+    const n = myTasks().length;
+    const dark = themeOf(getTheme()).mode === 'dark';
+    const mark = ORG && ORG.logo ? `<img src="${esc(ORG.logo)}" alt="${esc(ORG.name)} logo">` : `<span class="org-logo">${esc((ORG ? ORG.short : 'Qualixx').slice(0, 2).toUpperCase())}</span>`;
+    const pc = procCodeOf(active);
     return `
-    <div class="layout">
-      <aside class="sidebar" id="sidebar">
-        ${orgBrand()}
-        <div class="profile-card">
-          <span class="avatar">${esc(initials(s.name))}</span>
-          <span class="profile-text"><strong>${esc(s.name)}</strong><small>${esc(s.role)}</small></span>
-          ${(() => { const d = themeOf(getTheme()).mode === 'dark'; return `<button class="theme-btn" data-action="toggle-theme" title="${d ? 'Light mode' : 'Dark mode'}" aria-label="${d ? 'Light mode' : 'Dark mode'}">${icon(d ? 'sun' : 'moon')}</button>`; })()}
+    <header class="topnav">
+      <button class="icon-btn menu-btn" data-action="toggle-menu" aria-label="Menu" title="Show or hide the side menu">${icon('menu')}</button>
+      <a class="top-brand" href="#/dashboard">${mark}<span><strong class="no-tr">${esc(ORG ? ORG.name : 'Qualixx')}</strong>${ORG && ORG.nameKr ? `<small class="no-tr">${esc(ORG.nameKr)}</small>` : ''}</span></a>
+      <nav class="top-tabs" aria-label="Main">${secs.map((x) => `<a href="${x.href}" class="top-tab ${x.k === sec ? 'on' : ''}">${icon(x.ic)}<span>${x.label}</span>${x.k === 'home' && n ? `<em class="count alert-count">${n}</em>` : ''}</a>`).join('')}</nav>
+      <div class="top-right">
+        <button class="top-search" data-action="open-search" aria-label="Search (Ctrl+K)">${icon('search')}<span>Search</span><kbd>Ctrl K</kbd></button>
+        <button class="icon-btn" data-action="toggle-theme" title="${dark ? 'Light mode' : 'Dark mode'}" aria-label="${dark ? 'Light mode' : 'Dark mode'}">${icon(dark ? 'sun' : 'moon')}</button>
+        <a class="top-lang no-tr" href="#/settings" title="Language">${esc(I18N.lang.toUpperCase())}</a>
+        <div class="user-menu">
+          <button class="avatar-btn" data-action="toggle-user-menu" aria-haspopup="true" aria-expanded="false"><span class="avatar">${esc(initials(s.name))}</span></button>
+          <div class="user-pop" id="user-pop" hidden>
+            <p><strong class="no-tr">${esc(s.name)}</strong><small class="muted">${esc(s.role)}</small></p>
+            <a href="#/settings">${icon('settings')}Settings</a><a href="#/help">${icon('help')}Help</a><a href="#/about">${icon('info')}About Qualixx</a>
+            <button data-action="logout">${icon('logout')}Sign out</button>
+          </div>
         </div>
-        <button class="side-search" data-action="open-search" aria-label="Search (Ctrl+K)">${icon('search')}<span>Search</span><kbd>Ctrl K</kbd></button>
-        <nav class="side-nav" aria-label="Main">
-          ${nav('#/dashboard', 'dashboard', 'My Dashboard', 'dashboard')}
-          ${(() => { const n = myTasks().length; return nav('#/tasks', 'check', 'My Tasks', 'tasks', n ? `<em class="count alert-count">${n}</em>` : ''); })()}
-          ${navSection('products', 'box', 'Products', catalog().length, [
-            ['#/products', 'All Products', 'products', catalog().length],
-            ['#/products/registrations', 'Authorizations', 'products:registrations', catalog().flatMap(regsOf).filter(renewSoon).length || '', true],
-            ['#/products/standards', 'Product Standards', 'products:standards'],
-            ['#/products/techdocs', 'Technical Docs', 'products:techdocs', catalog().flatMap(tdOf).filter((p) => p.status === 'Final').length || ''],
-            ['#/products/labels', 'Labels & UDI', 'products:labels'],
-            ['#/process/risk', 'Risk Files', 'risk', db.products.length]
-          ], active)}
-          ${ORG ? docSection(active) : ''}
-          <p class="side-label">Work Process</p>
-          ${nav('#/process', 'process', ORG ? 'Process Map' : 'All Processes', 'process')}
-          ${ORG ? processNav(active) : nav('#/process/risk', 'risk', 'Risk Management', 'risk')}
-          ${ORG ? '' : PROCESSES.filter((x) => !x.live).map((x) => `<span class="nav-item disabled" aria-disabled="true">${icon(x.icon)}<span>${x.name}</span><em>Soon</em></span>`).join('')}
-          ${ORG ? `<p class="side-label">Team</p>${nav('#/people', 'users', 'People', 'people')}${nav('#/messages', 'chat', 'Messages', 'messages')}` : ''}
-          <p class="side-label">Other Menu</p>
-          <a class="nav-item ${active === 'settings' ? 'on' : ''}" href="#/settings">${icon('settings')}<span>Settings</span><em class="count lang-chip no-tr">${esc(I18N.lang.toUpperCase())}</em></a>
-          <a class="nav-item ${active === 'help' ? 'on' : ''}" href="#/help">${icon('help')}<span>Help</span></a>
-          <a class="nav-item ${active === 'about' ? 'on' : ''}" href="#/about">${icon('info')}<span>About Qualixx</span></a>
-          <button class="nav-item" data-action="logout">${icon('logout')}<span>Sign out</span></button>
-        </nav>
+      </div>
+    </header>
+    <div class="layout">
+      <aside class="sidebar subnav" id="sidebar">
+        <p class="subnav-title">${icon(curSec.ic)}<span>${curSec.label}</span></p>
+        <nav class="side-nav" aria-label="${esc(curSec.label)}">${subNav(sec, active)}</nav>
         <a class="app-version" href="#/about" title="About Qualixx">${esc(QX.APP.product)} v${esc(QX.APP.version)}<small>Build ${esc(QX.APP.build)} · ${esc(QX.APP.channel)}</small></a>
-        ${ORG && ORG.short === 'Qualixx' ? '' : `<a class="side-brand ${ORG && ORG.short !== 'Qualixx' ? 'powered' : ''}" href="https://qualixx.ai" title="qualixx.ai"><span class="logo">Q</span>${ORG && ORG.short !== 'Qualixx' ? '<span>Powered by <b>Qualixx</b></span>' : 'Qualixx'}</a>`}
+        ${ORG && ORG.short !== 'Qualixx' ? `<a class="side-brand powered" href="https://qualixx.ai" title="qualixx.ai"><span class="logo">Q</span><span>Powered by <b>Qualixx</b></span></a>` : ''}
       </aside>
       <div class="content">
-        <div class="mobilebar"><button class="icon-btn" data-action="toggle-menu" aria-label="Open menu">${icon('menu')}</button><span class="side-brand"><span class="logo">Q</span>Qualixx</span></div>
-        <main class="main">${content}</main>
+        <main class="main">${pc ? procStrip(pc, active) : ''}${content}</main>
         <p class="demo-note">${esc(QX.APP.product)} v${esc(QX.APP.version)} (${esc(QX.APP.channel)}) · data is stored only in this browser.</p>
       </div>
     </div>`;
@@ -270,7 +376,7 @@
     const count = (t) => allDocs().filter((d) => inT(d, t)).length;
     const list = allDocs().filter((d) => inT(d, docType));
     return shell(`
-      ${pageHead('Quality Documents', `${esc(ORG.name)} controlled documents — current effective revisions. Source: ${esc(ORG.docListRef || '')}.`, '<a href="#/dashboard">My Dashboard</a> / Quality Documents',
+      ${pageHead('Quality Documents', `${esc(ORG.name)} controlled documents — current effective revisions. Source: ${esc(ORG.docListRef || '')}.`, '<a href="#/dashboard">Home</a> / Quality Documents',
       `<a class="btn outline" href="#/process/doc-control">${icon('process')}Document Control</a><button class="btn primary" data-action="dc-new">${icon('plus')}New document</button>`)}
       <section class="card table-card">
         <div class="table-top">
@@ -287,6 +393,7 @@
     const d = docById(id);
     if (!d) return null;
     settleDocs();
+    noteRecent(d.id);
     const parent = d.parent ? docById(d.parent) : null;
     const children = allDocs().filter((x) => x.parent === d.id);
     const g = groupOf(d.id);
@@ -295,7 +402,6 @@
     const st = docState(d); const e = effRev(d); const v = openRev(d);
     const obsolete = r && r.obsolete;
     const acts = [
-      live ? `<a class="btn outline" href="#/process/${live}">${icon(live === 'risk' ? 'risk' : 'process')}Open workflow</a>` : '',
       !obsolete && !v ? `<button class="btn primary" data-action="dc-start" data-id="${esc(d.id)}">${icon('edit')}Start revision</button>` : '',
       !obsolete && !v && e ? `<button class="btn outline" data-action="dc-obsolete" data-id="${esc(d.id)}">Make obsolete</button>` : ''
     ].join('');
@@ -305,7 +411,7 @@
     const content = e && e.content;
     return shell(`
       ${pageHead(`${esc(d.id)} · ${esc(d.en)}`, `${esc(d.kr)} · <span class="dtype t-${esc(d.type.toLowerCase())}">${esc(d.type)}</span> · <span class="status ${st.cls}">${esc(st.label)}</span>${e ? ` · Rev.${esc(e.rev)}` : ''}`,
-        `<a href="#/dashboard">My Dashboard</a> / <a href="#/documents">Quality Documents</a> / ${esc(d.id)}`, acts)}
+        `<a href="#/dashboard">Home</a> / <a href="#/documents">Quality Documents</a> / ${esc(d.id)}`, acts)}
       ${obsolete ? `<p class="alert">Obsolete since ${fmt(obsolete.at)} · ${esc(obsolete.by)} · ${esc(obsolete.reason)}. Kept for reference only — do not use.</p>` : ''}
       ${v ? changePanel(d, v) : ''}
       <section class="doc-grid">
@@ -368,14 +474,14 @@
         }).join('')}</div>
       </section>`).join('');
     return shell(`
-      ${pageHead('Process Map', `${esc(ORG.name)} QMS processes from the Quality Manual (MMS). Measurement & improvement outputs feed management review, whose decisions change the core and support processes.`, '<a href="#/dashboard">My Dashboard</a> / Work Process')}
+      ${pageHead('Process Map', `${esc(ORG.name)} QMS processes from the Quality Manual (MMS). Measurement & improvement outputs feed management review, whose decisions change the core and support processes.`, '<a href="#/dashboard">Home</a> / Work Process')}
       ${groups}`, 'process');
   }
 
   function viewPeople() {
     const me = (getSession() || {}).personId;
     return shell(`
-      ${pageHead('People', `${esc(ORG.name)} team and QMS responsibilities.`, '<a href="#/dashboard">My Dashboard</a> / People')}
+      ${pageHead('People', `${esc(ORG.name)} team and QMS responsibilities.`, '<a href="#/dashboard">Home</a> / People')}
       <section class="people-grid">${ORG.people.map((p) => `
         <article class="card person">
           <span class="avatar lg">${esc(initials(p.name))}</span>
@@ -399,7 +505,7 @@
     const cur = others.find((p) => p.id === pid) || null;
     const thread = cur ? (msgs[cur.id] || []) : [];
     return shell(`
-      ${pageHead('Messages', 'Direct messages with your team. Demo: messages stay in this browser and are not delivered.', '<a href="#/dashboard">My Dashboard</a> / Messages')}
+      ${pageHead('Messages', 'Direct messages with your team. Demo: messages stay in this browser and are not delivered.', '<a href="#/dashboard">Home</a> / Messages')}
       <section class="card chat">
         <aside class="chat-list">${others.map((p) => {
           const last = (msgs[p.id] || []).slice(-1)[0];
@@ -487,7 +593,7 @@
       </tr>`;
     }).join('');
     return shell(`
-      ${pageHead('Products', 'Medical devices your organization manufactures, with their regulatory information and linked risk management files.', '<a href="#/dashboard">My Dashboard</a> / Products',
+      ${pageHead('Products', 'Medical devices your organization manufactures, with their regulatory information and linked risk management files.', '<a href="#/dashboard">Home</a> / Products',
         `<button class="btn primary" data-action="new-catalog">${icon('plus')}Add product</button>`)}
       <section class="card table-card">
         ${list.length ? `<div class="table-wrap"><table class="table">
@@ -505,7 +611,7 @@
     const row = (k, v) => `<tr><th>${k}</th><td>${esc(v) || '<span class="muted">—</span>'}</td></tr>`;
     return shell(`
       ${pageHead(esc(x.name), `${esc(x.model)}${x.version ? ' · v' + esc(x.version) : ''} · <span class="status ${x.status === 'Released' ? 's-Approved' : x.status === 'Retired' ? 's-Soon' : 's-Draft'}">${esc(x.status)}</span>${x.example ? ' · <span class="chip">Example</span>' : ''}`,
-        '<a href="#/dashboard">My Dashboard</a> / <a href="#/products">Products</a> / ' + esc(x.model || x.name),
+        '<a href="#/dashboard">Home</a> / <a href="#/products">Products</a> / ' + esc(x.model || x.name),
         `<button class="btn outline" data-action="edit-catalog" data-id="${x.id}">${icon('edit')}Edit</button><button class="btn primary" data-action="risk-for-product" data-id="${x.id}">${icon('plus')}New risk file</button>`)}
       ${tabs}
       ${tab === 'design' ? dhfTab(x) : tab === 'techdocs' ? tdTab(x) : tab === 'standard' ? psTab(x) : tab === 'registrations' ? regTab(x) : tab === 'info' ? `<section class="doc-grid">
@@ -608,7 +714,7 @@
     const item = (code) => {
       const on = active === 'proc:' + code || (code === (Object.keys(ORG.liveProcesses || {}).find((k) => ORG.liveProcesses[k] === 'risk')) && active === 'risk');
       const live = ORG.liveProcesses && ORG.liveProcesses[code];
-      return `<a href="${procHref(code)}" class="nav-item sub ${on ? 'on' : ''}"><span class="nav-code">${esc(code)}</span><span>${esc(procName(code))}</span>${live ? '<i class="live-dot" title="Workflow live"></i>' : ''}</a>`;
+      return `<a href="${procHref(code)}" class="nav-item sub ${on ? 'on' : ''}"><span class="nav-code no-tr">${esc(code)}</span><span>${esc(procName(code))}</span>${live ? '<i class="live-dot" title="Workflow live"></i>' : ''}</a>`;
     };
     const my = pins().filter((c) => docById(c));
     return `
@@ -638,9 +744,9 @@
     const pinned = pins().includes(code);
     const siblings = (g.codes || []).filter((c) => c !== code);
     return shell(`
-      ${pageHead(`<span class="code-badge">${esc(code)}</span> ${esc(procName(code))}`, `${esc(d.kr)} · ${esc(g.name || '')} · Owner ${esc(deptName(d.owner))}`,
-        `<a href="#/dashboard">My Dashboard</a> / <a href="#/process">Work Process</a> / ${esc(code)}`,
-        `<button class="btn outline ${pinned ? 'pinned' : ''}" data-action="pin" data-code="${esc(code)}" aria-pressed="${pinned}">${icon('star')}${pinned ? 'Pinned' : 'Pin to My Processes'}</button>`)}
+      ${pageHead(`<span class="code-badge no-tr">${esc(code)}</span> ${esc(procName(code))}`, `${esc(d.kr)} · ${esc(g.name || '')} · Owner ${esc(deptName(d.owner))}`,
+        `<a href="#/dashboard">Home</a> / <a href="#/process">Work Process</a> / ${esc(code)}`,
+'')}
       <section class="ws-grid">
         <article class="card panel">
           <div class="panel-title"><h2>Process at a glance</h2></div>
@@ -894,7 +1000,7 @@
     const list = all.filter((t) => taskFilter === 'All' || t.kind === taskFilter);
     const late = all.filter((t) => t.due && t.due < todayStr()).length;
     return shell(`
-      ${pageHead('My Tasks', `Everything assigned to you across processes${late ? ` · <b class="late-text">${late} overdue</b>` : ''}.`, '<a href="#/dashboard">My Dashboard</a> / My Tasks')}
+      ${pageHead('My Tasks', `Everything assigned to you across processes${late ? ` · <b class="late-text">${late} overdue</b>` : ''}.`, '<a href="#/dashboard">Home</a> / My Tasks')}
       <section class="card table-card">
         <div class="table-top"><div class="seg" role="tablist">${kinds.map((k) => `<button role="tab" aria-selected="${taskFilter === k}" class="${taskFilter === k ? 'on' : ''}" data-action="task-filter" data-k="${k}">${k} <span>${n(k)}</span></button>`).join('')}</div></div>
         ${list.length ? `<div class="table-wrap"><table class="table"><thead><tr><th>Type</th><th>Task</th><th>Process</th><th>From</th><th>Due</th><th></th></tr></thead><tbody>${taskRows(list)}</tbody></table></div>`
@@ -922,7 +1028,7 @@
     const pinned = pins().includes('PDR');
     return shell(`
       ${pageHead('<span class="code-badge">PDR</span> Document Control', 'Create, review, approve, distribute and withdraw controlled documents (ISO 13485 §4.2.4).',
-        '<a href="#/dashboard">My Dashboard</a> / <a href="#/process">Work Process</a> / PDR',
+        '<a href="#/dashboard">Home</a> / <a href="#/process">Work Process</a> / PDR',
         `<button class="btn outline ${pinned ? 'pinned' : ''}" data-action="pin" data-code="PDR" aria-pressed="${pinned}">${icon('star')}${pinned ? 'Pinned' : 'Pin'}</button><button class="btn primary" data-action="dc-new">${icon('plus')}New document</button>`)}
       <section class="ws-kpis big card panel">
         <span><strong>${docs.length - obs}</strong><small>controlled documents</small></span>
@@ -987,7 +1093,7 @@
     const procs = allDocs().filter((d) => d.type === 'Procedure' && !(dcRec(d.id) || {}).obsolete);
     const st = navState(); const open = (st.sec || {}).procs === true || String(active || '').startsWith('documents:proc:');
     return `<button class="proc-toggle ${open ? 'open' : ''}" data-action="toggle-procs" aria-expanded="${open}">${icon('chevron')}<span>${open ? 'Hide procedures' : 'Show all procedures'}</span></button>
-      ${open ? `<div class="proc-list">${procs.map((d) => `<a href="#/documents/${esc(d.id)}" class="nav-item sub2 ${active === 'documents:proc:' + d.id ? 'on' : ''}"><span class="nav-code">${esc(d.id)}</span><span>${esc(procName(d.id))}</span></a>`).join('')}</div>` : ''}`;
+      ${open ? `<div class="proc-list">${procs.map((d) => `<a href="#/documents/${esc(d.id)}" class="nav-item sub2 ${active === 'documents:proc:' + d.id ? 'on' : ''}"><span class="nav-code no-tr">${esc(d.id)}</span><span>${esc(procName(d.id))}</span></a>`).join('')}</div>` : ''}`;
   }
   function docSection(active) {
     const docs = allDocs();
@@ -1013,7 +1119,7 @@
   function viewLabels() {
     const list = catalog();
     return shell(`
-      ${pageHead('Labels &amp; UDI', 'Label content and unique device identification for every product. Open a product to edit its label.', '<a href="#/dashboard">My Dashboard</a> / <a href="#/products">Products</a> / Labels &amp; UDI')}
+      ${pageHead('Labels &amp; UDI', 'Label content and unique device identification for every product. Open a product to edit its label.', '<a href="#/dashboard">Home</a> / <a href="#/products">Products</a> / Labels &amp; UDI')}
       <section class="label-grid">${list.length ? list.map((x) => `
         <a class="card label-card" href="#/products/${x.id}/label">
           <div class="lc-top"><span class="thumb">${esc(initials(x.model || x.name))}</span><span><strong>${esc(x.name)}</strong><small class="muted">${esc(x.model)}${x.swVersion ? ' · SW v' + esc(x.swVersion) : ''}</small></span></div>
@@ -1091,7 +1197,7 @@
     const renew = all.filter(renewSoon).length;
     const markets = new Set(all.filter((r) => r.status === 'Approved').map((r) => r.market));
     return shell(`
-      ${pageHead('Market Authorizations', 'Registration, certification and clearance status of every product by country and region.', '<a href="#/dashboard">My Dashboard</a> / <a href="#/products">Products</a> / Market Authorizations',
+      ${pageHead('Market Authorizations', 'Registration, certification and clearance status of every product by country and region.', '<a href="#/dashboard">Home</a> / <a href="#/products">Products</a> / Market Authorizations',
         catalog().length ? `<button class="btn primary" data-action="new-reg" data-id="${catalog()[0].id}">${icon('plus')}Add authorization</button>` : '')}
       <section class="ws-kpis big card panel">
         <span><strong>${markets.size}</strong><small>markets with approval</small></span>
@@ -1166,7 +1272,7 @@
     const q = qms(); const p = q.policy;
     return shell(`
       ${pageHead('Quality Policy', `Rev.${esc(p.rev)} · effective ${fmt(p.effective)} · approved by ${esc(p.approvedBy)}${q.example ? ' · <span class="chip">Example text</span>' : ''}`,
-        '<a href="#/dashboard">My Dashboard</a> / <a href="#/documents">Quality Documents</a> / Quality Policy',
+        '<a href="#/dashboard">Home</a> / <a href="#/documents">Quality Documents</a> / Quality Policy',
         `<a class="btn outline" href="#/quality/objectives">${icon('star')}Quality Objectives</a><button class="btn primary" data-action="edit-policy">${icon('edit')}Revise policy</button>`)}
       <section class="doc-grid">
         <article class="card panel policy-card">
@@ -1201,7 +1307,7 @@
     }).join('');
     return shell(`
       ${pageHead('Quality Objectives', `Measurable objectives consistent with the quality policy, reviewed at management review (ISO 13485 §5.4.1, §5.6).${q.example ? ' <span class="chip">Example objectives</span>' : ''}`,
-        '<a href="#/dashboard">My Dashboard</a> / <a href="#/documents">Quality Documents</a> / Quality Objectives',
+        '<a href="#/dashboard">Home</a> / <a href="#/documents">Quality Documents</a> / Quality Objectives',
         `<a class="btn outline" href="#/quality/policy">Quality Policy</a><button class="btn primary" data-action="new-obj">${icon('plus')}Add objective</button>`)}
       <section class="ws-kpis big card panel">
         <span><strong>${q.objectives.length}</strong><small>objectives</small></span>
@@ -1338,7 +1444,7 @@
   function viewStandards() {
     const list = catalog();
     return shell(`
-      ${pageHead('Product Standards', 'Product standard (제품표준서 / device master record) for every product.', '<a href="#/dashboard">My Dashboard</a> / <a href="#/products">Products</a> / Product Standards')}
+      ${pageHead('Product Standards', 'Product standard (제품표준서 / device master record) for every product.', '<a href="#/dashboard">Home</a> / <a href="#/products">Products</a> / Product Standards')}
       <section class="card table-card">${list.length ? `<div class="table-wrap"><table class="table">
         <thead><tr><th>Product</th><th>Document no.</th><th>Revision</th><th>Status</th><th>Approved</th><th>Completeness</th></tr></thead>
         <tbody>${list.map((x) => { const st = stdOf(x); const done = PS_SECTIONS.filter(([k]) => k === 'specs' ? st.specs.length : (st[k] || '').trim()).length;
@@ -1652,7 +1758,7 @@
     ].join('');
     return shell(`
       ${pageHead(`${esc(tpl.name)} · v${esc(p.version)}`, `${esc(x.name)} (${esc(x.model)}) · ${tdBadge(p.status)}${reg ? ` · ${esc(reg.market)} ${esc(reg.pathway)}` : ''}`,
-        `<a href="#/dashboard">My Dashboard</a> / <a href="#/products">Products</a> / <a href="#/products/${x.id}/techdocs">${esc(x.model)}</a> / ${esc(p.market)} v${esc(p.version)}`, acts)}
+        `<a href="#/dashboard">Home</a> / <a href="#/products">Products</a> / <a href="#/products/${x.id}/techdocs">${esc(x.model)}</a> / ${esc(p.market)} v${esc(p.version)}`, acts)}
       ${locked ? `<p class="alert soft no-print">${p.status === 'Final' ? `Final version approved by ${esc(tpl.authority)}${p.approvalNo ? ' (' + esc(p.approvalNo) + ')' : ''} on ${fmt(p.approvedAt)}. Locked — changes need an amendment.` : 'Superseded by a newer approved version. Kept for reference.'}</p>` : ''}
       <section class="ws-kpis big card panel no-print">
         <span><strong class="ok-text">${n('Ready')}</strong><small>sections ready</small></span>
@@ -1676,7 +1782,7 @@
     const rows = catalog().flatMap((x) => tdOf(x).map((p) => ({ x, p })));
     const fin = rows.filter((r) => r.p.status === 'Final');
     return shell(`
-      ${pageHead('Technical Documentation', 'Technical documentation by product and market — drafts generated from the design file, and the final versions approved by each authority.', '<a href="#/dashboard">My Dashboard</a> / <a href="#/products">Products</a> / Technical Documentation')}
+      ${pageHead('Technical Documentation', 'Technical documentation by product and market — drafts generated from the design file, and the final versions approved by each authority.', '<a href="#/dashboard">Home</a> / <a href="#/products">Products</a> / Technical Documentation')}
       <section class="ws-kpis big card panel">
         <span><strong>${fin.length}</strong><small>final (approved) versions</small></span>
         <span><strong>${rows.filter((r) => r.p.status === 'Submitted').length}</strong><small>under review</small></span>
@@ -1900,7 +2006,7 @@
   function viewSettings() {
     const s2 = getSession();
     return shell(`
-      ${pageHead('Settings', 'Preferences for your account.', '<a href="#/dashboard">My Dashboard</a> / Settings')}
+      ${pageHead('Settings', 'Preferences for your account.', '<a href="#/dashboard">Home</a> / Settings')}
       <section class="card panel" style="margin-bottom:16px">
         <div class="panel-title"><h2>Appearance</h2><p class="muted">Choose a colour theme. The moon / sun button in the sidebar switches between your last light and dark theme.</p></div>
         ${['light', 'dark'].map((mode) => `<h3>${mode === 'light' ? 'Light themes' : 'Dark themes'}</h3>
@@ -1963,7 +2069,7 @@
   function viewAbout() {
     const a = QX.APP;
     return shell(`
-      ${pageHead('About Qualixx', 'Identification of this software. Use it in your software validation and when contacting support.', '<a href="#/dashboard">My Dashboard</a> / About Qualixx')}
+      ${pageHead('About Qualixx', 'Identification of this software. Use it in your software validation and when contacting support.', '<a href="#/dashboard">Home</a> / About Qualixx')}
       <section class="doc-grid">
         <article class="card app-label" aria-label="Qualixx software label">
           <div class="al-head"><img src="logo.svg" alt="" width="44" height="44"><span><strong>${esc(a.product)}</strong><small>Version ${esc(a.version)} · Build ${esc(a.build)}</small></span><span class="status s-Draft">${esc(a.channel)}</span></div>
@@ -2113,7 +2219,7 @@
   function viewProcess() {
     if (ORG) return viewProcessMap();
     return shell(`
-      ${pageHead('Work Process', 'Choose a quality process to work in.', '<a href="#/dashboard">My Dashboard</a> / Work Process')}
+      ${pageHead('Work Process', 'Choose a quality process to work in.', '<a href="#/dashboard">Home</a> / Work Process')}
       <section class="process-grid">
         ${PROCESSES.map((m) => `
           <${m.live ? `a href="#/process/${m.id}"` : 'div aria-disabled="true"'} class="card process ${m.live ? 'live' : 'off'}">
@@ -2127,7 +2233,7 @@
 
   function viewHelp() {
     return shell(`
-      ${pageHead('Help', 'How this demo works.', '<a href="#/dashboard">My Dashboard</a> / Help')}
+      ${pageHead('Help', 'How this demo works.', '<a href="#/dashboard">Home</a> / Help')}
       <section class="card panel prose">
         <h3>Flow</h3>
         <ol><li>Dashboard → Work Process → Risk Management.</li><li>Create a risk management file (or load the sample) and follow the steps: Overview → Plan → Safety characteristics → Risk analysis → Risk control → Review &amp; approval.</li><li>Open Report to print or save the risk management report as PDF.</li></ol>
@@ -2140,7 +2246,7 @@
 
   function viewRiskList() {
     return shell(`
-      ${pageHead('Risk Management', 'Create and manage ISO 14971 risk management files per product.', '<a href="#/dashboard">My Dashboard</a> / <a href="#/process">Work Process</a> / Risk Management',
+      ${pageHead('Risk Management', 'Create and manage ISO 14971 risk management files per product.', '<a href="#/dashboard">Home</a> / <a href="#/process">Work Process</a> / Risk Management',
         `<button class="btn outline" data-action="load-sample">Load sample</button><button class="btn primary" data-action="new-product">${icon('plus')}New File</button>`)}
       ${filesTable()}`, 'risk');
   }
@@ -2164,7 +2270,7 @@
     const body = ({ overview: tabOverview, plan: tabPlan, char: tabChar, analysis: tabAnalysis, control: tabControl, review: tabReview, report: tabReport, audit: tabAudit }[tab] || tabOverview)(p);
     return shell(`
       ${pageHead(esc(p.name), `${esc(p.model)}${p.version ? ' · v' + esc(p.version) : ''}${p.deviceClass ? ' · ' + esc(p.deviceClass) : ''} · <span class="status s-${esc(p.review.status)}">${esc(p.review.status)}</span>`,
-        `<a href="#/dashboard">My Dashboard</a> / <a href="#/process">Work Process</a> / <a href="#/process/risk">Risk Management</a> / ${esc(p.model || p.name)}`,
+        `<a href="#/dashboard">Home</a> / <a href="#/process">Work Process</a> / <a href="#/process/risk">Risk Management</a> / ${esc(p.model || p.name)}`,
         `<div class="progress-box" title="ISO 14971 completion conditions"><span>Completion <b>${done}/${ck.length}</b></span><div class="bar"><i style="width:${Math.round(done / ck.length * 100)}%"></i></div><small class="muted">${st.hazards} hazards · ${st.ctlDone}/${st.ctl} controls verified</small></div>`)}
       <nav class="steps" aria-label="Risk management steps">
         ${TABS.map((t, i) => `<a href="#/process/risk/${p.id}/${t.id}" class="${t.id === tab ? 'on' : ''}">${i < 6 ? `<span class="num">${i + 1}</span>` : ''}${t.name}${t.clause ? `<small>§${t.clause}</small>` : ''}</a>`).join('')}
@@ -2458,7 +2564,12 @@
       app.querySelector('[name=password]').value = u.password;
     },
     logout: () => { setSession(null); go('/login'); },
-    'toggle-menu': () => document.getElementById('sidebar').classList.toggle('open'),
+    'toggle-menu': () => {
+      if (window.innerWidth <= 820) { document.getElementById('sidebar').classList.toggle('open'); return; }
+      const st = navState(); st.subnav = st.subnav === false; saveNavState(st);
+      document.documentElement.setAttribute('data-subnav', st.subnav === false ? 'off' : 'on');
+    },
+    'toggle-user-menu': (el) => { const p = document.getElementById('user-pop'); if (!p) return; p.hidden = !p.hidden; el.setAttribute('aria-expanded', String(!p.hidden)); },
     filter: (el) => { tableFilter = el.dataset.f; render(); },
     'doc-type': (el) => go('/documents/type/' + docKeyOf(el.dataset.t)),
     'toggle-procs': () => { const st = navState(); st.sec = st.sec || {}; st.sec.procs = !(st.sec.procs === true); saveNavState(st); render(); },
@@ -2507,7 +2618,7 @@
     },
     'open-search': () => openSearch(),
     'toggle-group': (el) => { const st = navState(); st.open = st.open || {}; st.open[el.dataset.g] = !st.open[el.dataset.g]; saveNavState(st); render(); },
-    pin: (el) => { const added = togglePin(el.dataset.code); toast(added ? 'Pinned to My Processes' : 'Removed from My Processes'); render(); },
+    pin: (el) => { const added = togglePin(el.dataset.code); toast(added ? 'Pinned to Home' : 'Removed from Home'); render(); },
     'new-catalog': () => catalogModal(),
     'edit-catalog': (el) => catalogModal(findCatalog(el.dataset.id)),
     'delete-catalog': (el) => {
@@ -2585,6 +2696,8 @@
     }
   };
   document.addEventListener('click', (e) => {
+    const pop = document.getElementById('user-pop');
+    if (pop && !pop.hidden && !e.target.closest('.user-menu')) pop.hidden = true;
     const el = e.target.closest('[data-action]');
     if (!el || el.disabled) return;
     const fn = actions[el.dataset.action];
@@ -2926,6 +3039,7 @@
 
   /* ---------- router ---------- */
   function render() {
+    document.documentElement.setAttribute('data-subnav', navState().subnav === false ? 'off' : 'on');
     const path = currentPath || '/login';
     const parts = path.split('/').filter(Boolean);
     const session = getSession();

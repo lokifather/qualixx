@@ -138,8 +138,8 @@ window.QX = (function () {
   // Label of the Qualixx software itself (shown in "About Qualixx", sidebar and sign-in page)
   const APP = {
     product: 'Qualixx eQMS',
-    version: '0.11.0',
-    build: '20261102.3',
+    version: '0.12.0',
+    build: '20261104.1',
     releaseDate: '2026-10-28',
     channel: 'Demo',
     manufacturer: 'Qualixx Inc. (주식회사 퀄릭스, in incorporation)',
@@ -151,6 +151,7 @@ window.QX = (function () {
     validation: 'Customers validate Qualixx for its intended use under ISO 13485 §4.1.6. A validation package (requirements, risk assessment, test records) is provided per release.',
     standards: ['ISO 13485:2016', 'ISO 14971:2019', 'KGMP', '21 CFR 820 (QMSR)', '21 CFR Part 11 (design basis)'],
     releases: [
+      { version: '0.12.0', date: '2026-11-04', notes: 'New navigation: main sections (Home, Products, Quality System, Team) in the top bar and the menu of the selected section on the left. Each procedure is one place with two views, Procedure text and Work & records. Products list every product in the side menu. Pinned procedures and recently viewed documents on Home. Bottom tab bar on mobile.' },
       { version: '0.11.0', date: '2026-11-02', notes: 'Full text of the quality manual and all procedures with table of contents and links to related procedures and forms; procedures listed under Quality Documents › Procedures in the sidebar.' },
       { version: '0.10.0', date: '2026-11-02', notes: 'Ten colour themes in Settings: Blue & Gray, Gray, Mint Chocolate, Forest, Ocean, Rose, Sunset (light) and Midnight Violet, Graphite, Deep Navy (dark).' },
       { version: '0.9.0', date: '2026-11-02', notes: 'Dark theme (black glass, violet accents) selectable in Settings or with the moon button; dashboard Quality pulse chart and Audit readiness card.' },
