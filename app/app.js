@@ -1886,7 +1886,7 @@
     const parts = [['Design files', dhf], ['Quality objectives', obj], ['Tasks on time', onTime]].filter((p, i) => ORG || i !== 1);
     const score = Math.round(parts.reduce((n, p) => n + p[1], 0) / parts.length * 100);
     return `<article class="card ready-card">
-      <div class="ready-top"><span class="chip">${icon('check')}Audit readiness</span><span class="orb" aria-hidden="true"></span></div>
+      <div class="ready-top"><span class="chip">${icon('check')}Audit readiness</span></div>
       <small class="muted">Overall</small>
       <strong class="ready-num">${score}<small>%</small></strong>
       <ul class="ready-bars">${parts.map(([l, v]) => `<li><span>${esc(l)}</span><i><b style="width:${Math.round(v * 100)}%"></b></i><em>${Math.round(v * 100)}%</em></li>`).join('')}</ul>
